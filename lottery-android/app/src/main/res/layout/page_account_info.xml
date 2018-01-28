@@ -49,6 +49,22 @@
         />
 
     <com.lch.lottery.user.UserCenterListItem
+        android:id="@+id/lottery_place_widget"
+        style="@style/UserCenterListLayout"
+        app:UserCenterListItem_icon="@drawable/ic_home_black_24dp"
+        app:UserCenterListItem_text="附近彩票投注站"
+
+        />
+
+    <com.lch.lottery.user.UserCenterListItem
+        android:id="@+id/special_number_widget"
+        style="@style/UserCenterListLayout"
+        app:UserCenterListItem_icon="@drawable/ic_home_black_24dp"
+        app:UserCenterListItem_text="特邀专家预测"
+
+        />
+
+    <com.lch.lottery.user.UserCenterListItem
         android:id="@+id/logout_widget"
         style="@style/UserCenterListLayout"
         app:UserCenterListItem_icon="@drawable/ic_home_black_24dp"
