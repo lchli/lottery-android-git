@@ -1,16 +1,17 @@
 package com.lch.lottery.topic;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.blankj.utilcode.util.TimeUtils;
 import com.lch.lottery.R;
+import com.lch.lottery.topic.model.TopicResponse;
 import com.lch.netkit.common.tool.VF;
 import com.lchli.pinedrecyclerlistview.library.ListSectionData;
 import com.lchli.pinedrecyclerlistview.library.pinnedListView.PinnedListAdapter;
-
-import static com.lch.netkit.common.tool.VF.f;
 
 /**
  * Created by bbt-team on 2017/12/15.
@@ -41,13 +42,25 @@ public class TopicListAdapter extends PinnedListAdapter {
             case TYPE_PIN: {
                 TopicSection data = (TopicSection) getItem(position);
                 PinHolder vh = (PinHolder) holder;
-                vh.pinName.setText(data.tag);
+                if (TextUtils.isEmpty(data.tag)) {
+                    vh.pinName.setText("默认");
+                } else {
+                    vh.pinName.setText(data.tag);
+                }
             }
             break;
             case TYPE_ITEM: {
-                TopicModel data = (TopicModel) getItem(position);
+                final TopicResponse.Topic data = (TopicResponse.Topic) getItem(position);
                 ItemHolder vh = (ItemHolder) holder;
-                vh.topicTitleTextView.setText(data.topicTitle);
+                vh.topicTitleTextView.setText(data.title);
+                vh.authorNameTextView.setText(data.userName);
+                vh.updateTimeTextView.setText(TimeUtils.millis2String(data.updateTime));
+                vh.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        TopicDetailActivity.launch(data, v.getContext());
+                    }
+                });
             }
             break;
         }
@@ -56,7 +69,7 @@ public class TopicListAdapter extends PinnedListAdapter {
     @Override
     public int getItemViewType(int position) {
         Object o = getItem(position);
-        if (o instanceof TopicModel) {
+        if (o instanceof TopicResponse.Topic) {
             return TYPE_ITEM;
         } else if (o instanceof ListSectionData) {
             return ((ListSectionData) o).sectionViewType;
@@ -86,11 +99,15 @@ public class TopicListAdapter extends PinnedListAdapter {
 
         private final View itemView;
         private final TextView topicTitleTextView;
+        private final TextView authorNameTextView;
+        private final TextView updateTimeTextView;
 
         public ItemHolder(int viewType, Context context) {
             super(viewType);
             itemView = View.inflate(context, R.layout.item_topic, null);
             topicTitleTextView = VF.f(itemView, R.id.topicTitleTextView);
+            authorNameTextView = VF.f(itemView, R.id.authorNameTextView);
+            updateTimeTextView = VF.f(itemView, R.id.updateTimeTextView);
         }
 
         @Override

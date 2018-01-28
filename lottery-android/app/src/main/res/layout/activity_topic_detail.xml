@@ -17,7 +17,7 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
-            android:text="取消"
+            android:text="返回"
             android:textColor="@android:color/white"
             android:textSize="@dimen/app_title_text_size" />
 
@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="编辑帖子"
+            android:text="帖子详情"
             android:textColor="@android:color/white"
             android:textSize="@dimen/app_title_text_size" />
 
@@ -37,30 +37,38 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
             android:textColor="@android:color/white"
-            android:text="保存"
+            android:text="编辑"
             android:textSize="@dimen/app_title_text_size" />
 
 
     </RelativeLayout>
 
-    <EditText
+    <TextView
         android:id="@+id/topicTitleEt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="输入标题"
+        android:textColor="#000"
+        android:layout_margin="5dp"
+        android:textSize="18sp"
         android:singleLine="true" />
 
-    <EditText
+    <TextView
         android:id="@+id/topicTagEt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="输入标签"
+        android:textColor="@android:color/holo_orange_dark"
+        android:textSize="14sp"
+        android:layout_margin="5dp"
         android:singleLine="true" />
 
-    <EditText
+    <TextView
         android:id="@+id/topicContentEt"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="5dp"
         android:gravity="left|top"
+        android:textSize="16sp"
         android:hint="输入内容" />
 </LinearLayout>

@@ -80,4 +80,12 @@ public class HomeActivity extends BaseCompatActivity {
         mFilterFragment.onDestroyImpl();
         mBuyFragment.onDestroyImpl();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mTopicListFragment.refresh();
+        mFilterFragment.refresh();
+        mBuyFragment.refresh();
+    }
 }

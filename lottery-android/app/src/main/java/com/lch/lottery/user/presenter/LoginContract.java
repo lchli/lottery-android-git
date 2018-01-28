@@ -1,9 +1,8 @@
-package com.lch.lottery.user;
+package com.lch.lottery.user.presenter;
 
 
 import com.blankj.utilcode.util.LogUtils;
-import com.blankj.utilcode.util.ToastUtils;
-import com.lch.lottery.Apis;
+import com.lch.lottery.ApiUrl;
 import com.lch.lottery.user.data.UserRepo;
 import com.lch.lottery.user.model.UserResponse;
 import com.lch.netkit.NetKit;
@@ -12,7 +11,7 @@ import com.lch.netkit.string.Callback;
 import com.lch.netkit.string.Parser;
 import com.lch.netkit.string.StringRequestParams;
 
-public interface RegisterContract {
+public interface LoginContract {
 
 
     interface View {
@@ -29,7 +28,7 @@ public interface RegisterContract {
 
         void unregisterView();
 
-        void register(String userName, String pwd, String repwd);
+        void login(String userName, String pwd);
     }
 
     class PresenterImpl implements Presenter {
@@ -47,14 +46,14 @@ public interface RegisterContract {
         }
 
         @Override
-        public void register(String userName, String pwd, String repwd) {
+        public void login(String userName, String pwd) {
 
             StringRequestParams params = new StringRequestParams()
-                    .setUrl(Apis.REGISTER)
+                    .setUrl(ApiUrl.LOGIN)
                     .addParam("userName", userName)
                     .addParam("userPwd", pwd);
 
-            NetKit.stringRequest().post(params, new Parser<UserResponse.User>() {
+            NetKit.stringRequest().get(params, new Parser<UserResponse.User>() {
                 @Override
                 public UserResponse.User parse(String s) {
                     LogUtils.e(s);
@@ -64,7 +63,7 @@ public interface RegisterContract {
                         throw new IllegalStateException("服务器数据解析失败");
 
                     }
-                    if (response.status != Apis.API_CODE_SUCCESS || response.data == null) {
+                    if (response.status != ApiUrl.API_CODE_SUCCESS || response.data == null) {
                         throw new IllegalStateException(response.message);
                     }
                     UserRepo.saveUser(response.data);
@@ -83,7 +82,9 @@ public interface RegisterContract {
 
                 @Override
                 public void onFail(String s) {
-                    ToastUtils.showShort(s);
+                    if (view != null) {
+                        view.onFail(s);
+                    }
                 }
             });
 

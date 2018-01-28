@@ -10,14 +10,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <android.support.design.widget.FloatingActionButton
+    <ImageView
         android:id="@+id/createTopicFab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_marginBottom="20dp"
         android:layout_marginRight="20dp"
         android:clickable="true"
-        app:srcCompat="@mipmap/ic_launcher_round" />
+        android:scaleType="fitXY"
+        app:srcCompat="@mipmap/float_bt_add_topic" />
 </RelativeLayout>

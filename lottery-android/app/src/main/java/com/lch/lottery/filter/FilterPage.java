@@ -9,18 +9,13 @@ import android.view.View;
 
 import com.lch.lottery.R;
 import com.lch.lottery.TabPage;
-import com.lch.lottery.topic.TopicListContract;
-
-import java.util.List;
 
 /**
  * Created by bbt-team on 2017/12/15.
  */
 
-public class FilterPage extends TabPage implements TopicListContract.View {
+public class FilterPage extends TabPage {
 
-
-    private TopicListContract.Presenter mPresenter = new TopicListContract.PresenterImpl();
 
     public FilterPage(@NonNull Context context) {
         super(context);
@@ -45,21 +40,11 @@ public class FilterPage extends TabPage implements TopicListContract.View {
 
     @Override
     public void onCreateImpl() {
-        mPresenter.registerView(this);
     }
 
     @Override
     public void onDestroyImpl() {
-        mPresenter.unregisterView();
     }
 
-    @Override
-    public void onLoadedTopicList(List<Object> datas) {
 
-    }
-
-    @Override
-    public void onLoadFail(String msg) {
-
-    }
 }

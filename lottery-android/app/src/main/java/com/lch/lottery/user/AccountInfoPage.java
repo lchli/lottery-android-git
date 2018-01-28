@@ -31,6 +31,15 @@ public class AccountInfoPage extends TabPage {
     protected void init() {
         View.inflate(getContext(), R.layout.page_account_info, this);
         user_nick = VF.f(this, R.id.user_nick);
+        View logout_widget = VF.f(this, R.id.logout_widget);
+        logout_widget.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UserRepo.clearUser();
+
+                userPage.gotoLogin();
+            }
+        });
 
     }
 

@@ -9,8 +9,8 @@ import java.io.Serializable;
  */
 
 public class BaseResponse implements Serializable {
-    @JSONField(name = "Status")
+    @JSONField(name = "status")
     public int status;
-    @JSONField(name = "Message")
+    @JSONField(name = "message")
     public String message;
 }

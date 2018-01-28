@@ -14,11 +14,13 @@ public class UserResponse extends BaseResponse {
     public User data;
 
     public static class User implements Serializable {
-        @JSONField(name = "UserId")
+        @JSONField(name = "uid")
         public String userId;
-        @JSONField(name = "UserName")
+        @JSONField(name = "name")
         public String userName;
-        @JSONField(name = "UserPwd")
+        @JSONField(name = "pwd")
         public String userPwd;
+        @JSONField(name = "token")
+        public String token;
     }
 }

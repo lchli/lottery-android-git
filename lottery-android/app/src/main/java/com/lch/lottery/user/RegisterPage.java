@@ -5,9 +5,11 @@ import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.EditText;
 
+import com.blankj.utilcode.util.ToastUtils;
 import com.lch.lottery.R;
 import com.lch.lottery.TabPage;
 import com.lch.lottery.user.model.UserResponse;
+import com.lch.lottery.user.presenter.RegisterContract;
 import com.lch.netkit.common.tool.VF;
 
 /**
@@ -88,6 +90,6 @@ public class RegisterPage extends TabPage implements RegisterContract.View {
 
     @Override
     public void onFail(String msg) {
-
+        ToastUtils.showShort(msg);
     }
 }

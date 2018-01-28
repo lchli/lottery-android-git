@@ -10,20 +10,16 @@ import android.widget.ViewFlipper;
 
 import com.lch.lottery.R;
 import com.lch.lottery.TabPage;
-import com.lch.lottery.topic.TopicListContract;
 import com.lch.lottery.user.data.UserRepo;
 import com.lch.netkit.common.tool.VF;
-
-import java.util.List;
 
 /**
  * Created by bbt-team on 2017/12/15.
  */
 
-public class UserPage extends TabPage implements TopicListContract.View {
+public class UserPage extends TabPage {
 
 
-    private TopicListContract.Presenter mPresenter = new TopicListContract.PresenterImpl();
     private ViewFlipper pagesVF;
     private LoginPage mLoginPage;
     private RegisterPage mRegisterPage;
@@ -80,15 +76,6 @@ public class UserPage extends TabPage implements TopicListContract.View {
         mAccountInfoPage.onDestroyImpl();
     }
 
-    @Override
-    public void onLoadedTopicList(List<Object> datas) {
-
-    }
-
-    @Override
-    public void onLoadFail(String msg) {
-
-    }
 
     public void gotoLogin() {
         pagesVF.setDisplayedChild(0);

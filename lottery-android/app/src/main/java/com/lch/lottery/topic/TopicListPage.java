@@ -4,14 +4,13 @@ import android.content.Context;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.util.AttributeSet;
 import android.view.View;
 
 import com.blankj.utilcode.util.ToastUtils;
-import com.lch.lottery.App;
 import com.lch.lottery.R;
 import com.lch.lottery.TabPage;
+import com.lch.lottery.topic.controller.TopicController;
 import com.lch.netkit.common.tool.VF;
 import com.lchli.pinedrecyclerlistview.library.pinnedListView.PinnedListView;
 
@@ -21,13 +20,13 @@ import java.util.List;
  * Created by bbt-team on 2017/12/15.
  */
 
-public class TopicListPage extends TabPage implements TopicListContract.View {
+public class TopicListPage extends TabPage {
 
 
-    private final TopicListContract.Presenter mPresenter = new TopicListContract.PresenterImpl();
+    private final TopicController mPresenter = new TopicController();
     private PinnedListView topicListView;
     private TopicListAdapter mTopicListAdapter;
-    private FloatingActionButton createTopicFab;
+    private View createTopicFab;
 
     public TopicListPage(@NonNull Context context) {
         super(context);
@@ -56,39 +55,47 @@ public class TopicListPage extends TabPage implements TopicListContract.View {
         createTopicFab.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                App.launchActivity(WriteOrEditTopicActivity.class);
+                WriteOrEditTopicActivity.launch(null, getContext());
             }
         });
     }
 
     @Override
     public void onCreateImpl() {
-        if(isCreated){
+        if (isCreated) {
             return;
         }
-        isCreated=true;
+        isCreated = true;
 
-        mPresenter.registerView(this);
-        mPresenter.loadTopicList();
+        mPresenter.setCallback(new TopicController.Callback() {
+            @Override
+            public void onGet(List<Object> data) {
+                mTopicListAdapter.refresh(data);
+            }
+
+            @Override
+            public void onFail(String msg) {
+                ToastUtils.showLong(msg);
+            }
+
+        });
     }
 
     @Override
     public void onDestroyImpl() {
-        if(isDestroyed){
+        if (isDestroyed) {
             return;
         }
-        isDestroyed=true;
+        isDestroyed = true;
 
-        mPresenter.unregisterView();
+        mPresenter.setCallback(null);
     }
 
     @Override
-    public void onLoadedTopicList(List<Object> datas) {
-        mTopicListAdapter.refresh(datas);
+    public void refresh() {
+        super.refresh();
+        mPresenter.getAllTopicsAndTag();
     }
 
-    @Override
-    public void onLoadFail(String msg) {
-        ToastUtils.showLong(msg);
-    }
+
 }

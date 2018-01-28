@@ -1,5 +1,7 @@
 package com.lch.lottery.user.data;
 
+import android.support.annotation.NonNull;
+
 import com.blankj.utilcode.util.SPUtils;
 import com.lch.lottery.user.model.UserResponse;
 import com.lch.netkit.common.tool.JsonHelper;
@@ -19,7 +21,11 @@ public final class UserRepo {
 
     }
 
-    public static void saveUser(UserResponse.User user) {
+    public static void saveUser(@NonNull UserResponse.User user) {
         SPUtils.getInstance(USER_SP_FILE).put(KEY_USER, JsonHelper.toJSONString(user));
+    }
+
+    public static void clearUser() {
+        SPUtils.getInstance(USER_SP_FILE).put(KEY_USER, "");
     }
 }

@@ -25,6 +25,7 @@
         </activity>
 
         <activity android:name=".topic.WriteOrEditTopicActivity" />
+        <activity android:name=".topic.TopicDetailActivity" />
 
     </application>
 

@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:padding="5dp"
     android:orientation="horizontal">
 
 
@@ -12,14 +13,29 @@
 
         <ImageView
             android:id="@+id/authorHeadImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/ic_launcher" />
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:scaleType="fitXY"
+            android:src="@mipmap/def_head" />
 
         <TextView
             android:id="@+id/authorNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_marginTop="5dp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:maxLength="10"
+            android:text="lich" />
+
+        <TextView
+            android:id="@+id/updateTimeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:layout_marginTop="5dp"
+            android:singleLine="true"
             android:text="lich" />
     </LinearLayout>
 
@@ -27,6 +43,9 @@
         android:id="@+id/topicTitleTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:maxLines="3"
+        android:textSize="16sp"
         android:text="lich" />
 
 </LinearLayout>
