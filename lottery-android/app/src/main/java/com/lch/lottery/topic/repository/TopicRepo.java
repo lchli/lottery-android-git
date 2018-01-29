@@ -12,7 +12,9 @@ import java.util.List;
 public interface TopicRepo {
 
 
-    ResponseValue<List<TopicResponse.Topic>> getAllTopics();
+    ResponseValue<List<TopicResponse.Topic>> getTopics(String sort, String sortDirect,
+                                                       String tag, String title,
+                                                       String topicId, String userId);
 
     ResponseValue addOrUpdateTopic(TopicResponse.Topic topic);
 

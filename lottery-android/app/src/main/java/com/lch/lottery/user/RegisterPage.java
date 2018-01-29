@@ -7,16 +7,18 @@ import android.widget.EditText;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.lch.lottery.R;
-import com.lch.lottery.TabPage;
+import com.lch.lottery.common.TabPage;
+import com.lch.lottery.user.controller.UserController;
 import com.lch.lottery.user.model.UserResponse;
-import com.lch.lottery.user.presenter.RegisterContract;
 import com.lch.netkit.common.tool.VF;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Created by lichenghang on 2017/12/16.
  */
 
-public class RegisterPage extends TabPage implements RegisterContract.View {
+public class RegisterPage extends TabPage {
 
     private final UserPage userPage;
     private View gotoLoginBT;
@@ -24,7 +26,7 @@ public class RegisterPage extends TabPage implements RegisterContract.View {
     private EditText userAccountET;
     private EditText userPwdET;
     private EditText userRePwdET;
-    private RegisterContract.Presenter presenter = new RegisterContract.PresenterImpl();
+    private UserController userController = new UserController();
 
     public RegisterPage(@NonNull Context context, UserPage userPage) {
         super(context);
@@ -51,45 +53,48 @@ public class RegisterPage extends TabPage implements RegisterContract.View {
         registerBT.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                String username = userAccountET.getText().toString();
-                String pwd = userPwdET.getText().toString();
+                UserResponse.User user = new UserResponse.User();
+
+                user.userName = userAccountET.getText().toString();
+                user.userPwd = userPwdET.getText().toString();
                 String repwd = userRePwdET.getText().toString();
 
-                presenter.register(username, pwd, repwd);
+                if (!user.userPwd.equals(repwd)) {
+                    ToastUtils.showShort("两次密码不一致");
+                    return;
+                }
+
+                userController.register(user, new RegisterCb(RegisterPage.this));
 
             }
         });
     }
 
-    @Override
-    public void onCreateImpl() {
-        if (isCreated) {
-            return;
+
+    private static class RegisterCb implements UserController.Callback {
+
+        private WeakReference<RegisterPage> ref;
+
+        private RegisterCb(RegisterPage loginPage) {
+            ref = new WeakReference<>(loginPage);
+
         }
-        isCreated = true;
 
-        presenter.registerView(this);
-    }
+        @Override
+        public void onSuccess(UserResponse.User data) {
+            RegisterPage loginPage = ref.get();
+            if (loginPage != null) {
+                loginPage.userPage.gotoAccountInfo();
+            }
 
-    @Override
-    public void onDestroyImpl() {
-        if (isDestroyed) {
-            return;
         }
-        isDestroyed = true;
 
-        presenter.unregisterView();
-
-    }
-
-    @Override
-    public void onSuccess(UserResponse.User data) {
-        userPage.gotoAccountInfo();
-
-    }
-
-    @Override
-    public void onFail(String msg) {
-        ToastUtils.showShort(msg);
+        @Override
+        public void onFail(String msg) {
+            RegisterPage loginPage = ref.get();
+            if (loginPage != null) {
+                ToastUtils.showShort(msg);
+            }
+        }
     }
 }

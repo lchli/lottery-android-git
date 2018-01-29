@@ -7,18 +7,20 @@ import android.widget.EditText;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.lch.lottery.R;
-import com.lch.lottery.TabPage;
+import com.lch.lottery.common.TabPage;
+import com.lch.lottery.user.controller.UserController;
 import com.lch.lottery.user.model.UserResponse;
-import com.lch.lottery.user.presenter.LoginContract;
 import com.lch.netkit.common.tool.VF;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Created by lichenghang on 2017/12/16.
  */
 
-public class LoginPage extends TabPage implements LoginContract.View {
+public class LoginPage extends TabPage {
 
-    private LoginContract.Presenter presenter = new LoginContract.PresenterImpl();
+    private UserController userController = new UserController();
     private UserPage userPage;
     private View gotoRegisterBT;
     private View loginBT;
@@ -50,41 +52,36 @@ public class LoginPage extends TabPage implements LoginContract.View {
                 String username = userAccountET.getText().toString();
                 String pwd = userPwdET.getText().toString();
 
-                presenter.login(username, pwd);
+                userController.login(username, pwd, new LoginCb(LoginPage.this));
             }
         });
     }
 
 
-    @Override
-    public void onCreateImpl() {
-        if (isCreated) {
-            return;
+    private static class LoginCb implements UserController.Callback {
+
+        private WeakReference<LoginPage> ref;
+
+        private LoginCb(LoginPage loginPage) {
+            ref = new WeakReference<>(loginPage);
+
         }
-        isCreated = true;
 
-        presenter.registerView(this);
-    }
+        @Override
+        public void onSuccess(UserResponse.User data) {
+            LoginPage loginPage = ref.get();
+            if (loginPage != null) {
+                loginPage.userPage.gotoAccountInfo();
+            }
 
-    @Override
-    public void onDestroyImpl() {
-        if (isDestroyed) {
-            return;
         }
-        isDestroyed = true;
 
-        presenter.unregisterView();
-
-    }
-
-    @Override
-    public void onSuccess(UserResponse.User data) {
-        userPage.gotoAccountInfo();
-
-    }
-
-    @Override
-    public void onFail(String msg) {
-        ToastUtils.showShort(msg);
+        @Override
+        public void onFail(String msg) {
+            LoginPage loginPage = ref.get();
+            if (loginPage != null) {
+                ToastUtils.showShort(msg);
+            }
+        }
     }
 }

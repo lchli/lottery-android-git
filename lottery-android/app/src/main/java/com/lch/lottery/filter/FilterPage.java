@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.lch.lottery.R;
-import com.lch.lottery.TabPage;
+import com.lch.lottery.common.TabPage;
 
 /**
  * Created by bbt-team on 2017/12/15.
@@ -36,14 +36,6 @@ public class FilterPage extends TabPage {
     public void init() {
         super.init();
         View.inflate(getContext(), R.layout.page_filter, this);
-    }
-
-    @Override
-    public void onCreateImpl() {
-    }
-
-    @Override
-    public void onDestroyImpl() {
     }
 
 

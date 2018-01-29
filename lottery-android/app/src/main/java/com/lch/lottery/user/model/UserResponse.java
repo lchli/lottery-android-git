@@ -1,7 +1,7 @@
 package com.lch.lottery.user.model;
 
 import com.alibaba.fastjson.annotation.JSONField;
-import com.lch.lottery.BaseResponse;
+import com.lch.lottery.common.BaseResponse;
 
 import java.io.Serializable;
 

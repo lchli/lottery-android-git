@@ -1,5 +1,6 @@
 package com.lch.lottery.topic;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,8 +12,11 @@ import android.widget.TextView;
 import com.blankj.utilcode.util.ToastUtils;
 import com.lch.lottery.App;
 import com.lch.lottery.R;
+import com.lch.lottery.eventbus.TopicListDataChangedEvent;
 import com.lch.lottery.topic.controller.TopicController;
 import com.lch.lottery.topic.model.TopicResponse;
+import com.lch.lottery.util.DialogUtil;
+import com.lch.lottery.util.EventBusUtils;
 import com.lch.netkit.common.base.BaseCompatActivity;
 
 /**
@@ -30,6 +34,7 @@ public class WriteOrEditTopicActivity extends BaseCompatActivity {
     private EditText topicTagEt;
     private EditText topicContentEt;
     private TopicResponse.Topic topic;
+    private Dialog loadingDialog;
 
     public static void launch(@Nullable TopicResponse.Topic topic, Context context) {
         Intent it = new Intent(context, WriteOrEditTopicActivity.class);
@@ -77,6 +82,7 @@ public class WriteOrEditTopicActivity extends BaseCompatActivity {
                 topic.tag = tag;
                 topic.content = content;
 
+                loadingDialog = DialogUtil.showLoadingDialog(WriteOrEditTopicActivity.this);
                 presenter.addOrUpdateTopic(topic);
 
             }
@@ -85,12 +91,20 @@ public class WriteOrEditTopicActivity extends BaseCompatActivity {
         presenter.setCallback(new TopicController.Callback() {
             @Override
             public void onFail(String msg) {
+                if (loadingDialog != null) {
+                    loadingDialog.dismiss();
+                }
                 ToastUtils.showShort(msg);
 
             }
 
             @Override
             public void onSuccess() {
+                EventBusUtils.post(new TopicListDataChangedEvent());
+
+                if (loadingDialog != null) {
+                    loadingDialog.dismiss();
+                }
                 ToastUtils.showShort("发布成功");
                 finish();
             }
@@ -100,6 +114,9 @@ public class WriteOrEditTopicActivity extends BaseCompatActivity {
 
     @Override
     protected void onDestroy() {
+        if (loadingDialog != null) {
+            loadingDialog.dismiss();
+        }
         presenter.setCallback(null);
         super.onDestroy();
     }

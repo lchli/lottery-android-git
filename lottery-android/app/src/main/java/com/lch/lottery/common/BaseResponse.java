@@ -1,4 +1,4 @@
-package com.lch.lottery;
+package com.lch.lottery.common;
 
 import com.alibaba.fastjson.annotation.JSONField;
 

@@ -1,6 +1,8 @@
 package com.lch.lottery.user;
 
+import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,9 +10,11 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ViewFlipper;
 
+import com.blankj.utilcode.util.ToastUtils;
 import com.lch.lottery.R;
-import com.lch.lottery.TabPage;
-import com.lch.lottery.user.data.UserRepo;
+import com.lch.lottery.common.TabPage;
+import com.lch.lottery.user.controller.UserController;
+import com.lch.lottery.user.model.UserResponse;
 import com.lch.netkit.common.tool.VF;
 
 /**
@@ -24,6 +28,7 @@ public class UserPage extends TabPage {
     private LoginPage mLoginPage;
     private RegisterPage mRegisterPage;
     private AccountInfoPage mAccountInfoPage;
+    private UserController userController = new UserController();
 
     public UserPage(@NonNull Context context) {
         super(context);
@@ -51,44 +56,56 @@ public class UserPage extends TabPage {
         mRegisterPage = new RegisterPage(getContext(), this);
         mAccountInfoPage = new AccountInfoPage(getContext(), this);
 
+
         pagesVF.addView(mLoginPage);
         pagesVF.addView(mRegisterPage);
         pagesVF.addView(mAccountInfoPage);
 
-        if (UserRepo.getLoginUser() != null) {
-            gotoAccountInfo();
-        } else {
-            gotoLogin();
-        }
+        userController.getCurrentUser(new UserController.Callback() {
+            @Override
+            public void onSuccess(UserResponse.User data) {
+                if (data != null) {
+                    gotoAccountInfo();
+                } else {
+                    gotoLogin();
+                }
+            }
+
+            @Override
+            public void onFail(String msg) {
+                ToastUtils.showShort(msg);
+
+            }
+        });
+
+
     }
 
     @Override
-    public void onCreateImpl() {
-        mLoginPage.onCreateImpl();
-        mRegisterPage.onCreateImpl();
-        mAccountInfoPage.onCreateImpl();
+    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+        mLoginPage.onActivityCreated(activity, savedInstanceState);
+        mRegisterPage.onActivityCreated(activity, savedInstanceState);
+        mAccountInfoPage.onActivityCreated(activity, savedInstanceState);
     }
 
     @Override
-    public void onDestroyImpl() {
-        mLoginPage.onDestroyImpl();
-        mRegisterPage.onDestroyImpl();
-        mAccountInfoPage.onDestroyImpl();
+    public void onActivityDestroyed(Activity activity) {
+        mLoginPage.onActivityDestroyed(activity);
+        mRegisterPage.onActivityDestroyed(activity);
+        mAccountInfoPage.onActivityDestroyed(activity);
     }
 
 
     public void gotoLogin() {
         pagesVF.setDisplayedChild(0);
-        mLoginPage.refresh();
     }
 
     public void gotoRegister() {
         pagesVF.setDisplayedChild(1);
-        mRegisterPage.refresh();
     }
 
     public void gotoAccountInfo() {
         pagesVF.setDisplayedChild(2);
-        mAccountInfoPage.refresh();
+        mAccountInfoPage.onActivityResumed(null);
     }
 }

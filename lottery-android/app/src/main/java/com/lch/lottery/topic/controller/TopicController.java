@@ -1,12 +1,15 @@
 package com.lch.lottery.topic.controller;
 
 import android.support.annotation.NonNull;
+import android.text.TextUtils;
 
+import com.lch.lottery.DI;
 import com.lch.lottery.topic.TopicListAdapter;
 import com.lch.lottery.topic.TopicSection;
 import com.lch.lottery.topic.model.TopicResponse;
-import com.lch.lottery.topic.repository.RepoInjector;
 import com.lch.lottery.topic.repository.TopicRepo;
+import com.lch.lottery.user.model.UserResponse;
+import com.lch.lottery.user.repository.UserRepo;
 import com.lch.netkit.NetKit;
 import com.lch.netkit.string.ResponseValue;
 
@@ -32,7 +35,8 @@ public class TopicController {
         }
     }
 
-    private TopicRepo topicRepo = RepoInjector.injectTopicRepo();
+    private TopicRepo topicRepo = DI.injectTopicRepo();
+    private UserRepo localUserRepo = DI.injectLocalUserRepo();
     private Callback callback;
 
 
@@ -40,26 +44,37 @@ public class TopicController {
         this.callback = callback;
     }
 
-
     public void getAllTopicsAndTag() {
+        getTopicsImpl(null, null, null, null, null, null);
+    }
+
+    public void getMyTopics() {
+        ResponseValue<UserResponse.User> res = localUserRepo.getCurrentUser();
+        if (res.data == null) {
+            onFail("未登录");
+            return;
+        }
+
+        getTopicsImpl(null, null, null, null, null, res.data.userId);
+    }
+
+
+    private void getTopicsImpl(final String sort, final String sortDirect,
+                               final String tag, final String title,
+                               final String topicId, final String userId) {
 
         NetKit.runAsync(new Runnable() {
             @Override
             public void run() {
-                final ResponseValue<List<TopicResponse.Topic>> res = topicRepo.getAllTopics();
+                final ResponseValue<List<TopicResponse.Topic>> res = topicRepo.getTopics(sort, sortDirect, tag,
+                        title, topicId, userId);
                 if (res == null) {
+                    onFail("res is null");
                     return;
                 }
 
                 if (res.err != null) {
-                    NetKit.runInUI(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (callback != null) {
-                                callback.onFail(res.err.msg);
-                            }
-                        }
-                    });
+                    onFail(res.err.msg);
                     return;
                 }
 
@@ -119,45 +134,57 @@ public class TopicController {
         NetKit.runAsync(new Runnable() {
             @Override
             public void run() {
+                if (TextUtils.isEmpty(topic.title)) {
+                    onFail("标题不能为空");
+                    return;
+                }
+
+                if (TextUtils.isEmpty(topic.content)) {
+                    onFail("内容不能为空");
+                    return;
+                }
+
                 final ResponseValue res = topicRepo.addOrUpdateTopic(topic);
                 if (res == null) {
-                    NetKit.runInUI(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (callback != null) {
-                                callback.onFail("res is null");
-                            }
-                        }
-                    });
-
+                    onFail("res is null");
                     return;
                 }
 
                 if (res.err != null) {
-                    NetKit.runInUI(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (callback != null) {
-                                callback.onFail(res.err.msg);
-                            }
-                        }
-                    });
+                    onFail(res.err.msg);
                     return;
 
                 }
 
-                NetKit.runInUI(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (callback != null) {
-                            callback.onSuccess();
-                        }
-                    }
-                });
+                onSuccess();
             }
         });
 
 
+    }
+
+
+    private void onFail(final String msg) {
+
+        NetKit.runInUI(new Runnable() {
+            @Override
+            public void run() {
+                if (callback != null) {
+                    callback.onFail(msg);
+                }
+            }
+        });
+    }
+
+    private void onSuccess() {
+        NetKit.runInUI(new Runnable() {
+            @Override
+            public void run() {
+                if (callback != null) {
+                    callback.onSuccess();
+                }
+            }
+        });
     }
 
 }

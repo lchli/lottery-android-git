@@ -65,6 +65,14 @@
         />
 
     <com.lch.lottery.user.UserCenterListItem
+        android:id="@+id/lottery_graphy_widget"
+        style="@style/UserCenterListLayout"
+        app:UserCenterListItem_icon="@drawable/ic_home_black_24dp"
+        app:UserCenterListItem_text="彩票趋势图"
+
+        />
+
+    <com.lch.lottery.user.UserCenterListItem
         android:id="@+id/logout_widget"
         style="@style/UserCenterListLayout"
         app:UserCenterListItem_icon="@drawable/ic_home_black_24dp"

@@ -3,10 +3,11 @@ package com.lch.lottery.topic.repository;
 import android.support.annotation.NonNull;
 
 import com.apkfuns.logutils.LogUtils;
-import com.lch.lottery.ApiUrl;
+import com.lch.lottery.DI;
 import com.lch.lottery.topic.model.TopicResponse;
-import com.lch.lottery.user.data.UserRepo;
 import com.lch.lottery.user.model.UserResponse;
+import com.lch.lottery.user.repository.UserRepo;
+import com.lch.lottery.util.ApiUrl;
 import com.lch.netkit.NetKit;
 import com.lch.netkit.common.tool.JsonHelper;
 import com.lch.netkit.file.helper.NetworkError;
@@ -20,16 +21,27 @@ import java.util.List;
  * Created by lichenghang on 2018/1/28.
  */
 
-class NetTopicRepo implements TopicRepo {
+public class NetTopicRepo implements TopicRepo {
+    private UserRepo localUserRepo = DI.injectLocalUserRepo();
 
     @Override
-    public ResponseValue<List<TopicResponse.Topic>> getAllTopics() {
+    public ResponseValue<List<TopicResponse.Topic>> getTopics(String sort, String sortDirect,
+                                                              String tag, String title,
+                                                              String topicId, String userId) {
         StringRequestParams params = new StringRequestParams()
-                .setUrl(ApiUrl.TOPIC);
+                .addParam("sort", sort)
+                .addParam("sortDirect", sortDirect)
+                .addParam("tag", tag)
+                .addParam("title", title)
+                .addParam("topicId", topicId)
+                .addParam("userId", userId)
+                .setUrl(ApiUrl.TOPIC_GET);
 
         return NetKit.stringRequest().getSync(params, new Parser<List<TopicResponse.Topic>>() {
             @Override
             public List<TopicResponse.Topic> parse(String s) {
+                LogUtils.e(s);
+
                 TopicResponse response = JsonHelper.parseObject(s, TopicResponse.class);
                 if (response == null) {
                     throw new IllegalStateException("服务器数据解析失败");
@@ -48,20 +60,20 @@ class NetTopicRepo implements TopicRepo {
 
     @Override
     public ResponseValue addOrUpdateTopic(@NonNull TopicResponse.Topic topic) {
-        UserResponse.User user = UserRepo.getLoginUser();
-        if (user == null) {
+        ResponseValue<UserResponse.User> userRes = localUserRepo.getCurrentUser();
+        if (userRes.data == null) {
             ResponseValue res = new ResponseValue();
             res.err = new NetworkError("未登录");
             return res;
         }
 
         StringRequestParams params = new StringRequestParams()
-                .setUrl(ApiUrl.TOPIC)
-                .addParam("title", topic.title == null ? "" : topic.title)
-                .addParam("content", topic.content == null ? "" : topic.content)
-                .addParam("topicId", topic.uid == null ? "" : topic.uid)
-                .addParam("userId", user.userId == null ? "" : user.userId)
-                .addParam("tag", topic.tag == null ? "" : topic.tag);
+                .setUrl(ApiUrl.TOPIC_ADD)
+                .addParam("title", topic.title)
+                .addParam("content", topic.content)
+                .addParam("topicId", topic.uid)
+                .addParam("userId", userRes.data.userId)
+                .addParam("tag", topic.tag);
 
 
         return NetKit.stringRequest().postSync(params, new Parser<TopicResponse>() {

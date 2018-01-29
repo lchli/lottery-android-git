@@ -6,6 +6,7 @@ import android.content.Intent;
 
 import com.blankj.utilcode.util.Utils;
 import com.lch.netkit.NetKit;
+import com.lch.netkit.imageloader.LiImageLoader;
 
 
 public class App extends Application {
@@ -25,6 +26,7 @@ public class App extends Application {
 
         Utils.init(this);
         NetKit.init();
+        LiImageLoader.instance().init(LiImageLoader.newSetting(this));
     }
 
     public static void launchIt(Intent it) {

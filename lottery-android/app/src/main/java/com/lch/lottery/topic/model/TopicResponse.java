@@ -2,7 +2,7 @@ package com.lch.lottery.topic.model;
 
 import android.text.TextUtils;
 
-import com.lch.lottery.BaseResponse;
+import com.lch.lottery.common.BaseResponse;
 
 import java.io.Serializable;
 import java.util.List;

@@ -1,19 +1,31 @@
 package com.lch.lottery.topic;
 
+import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.blankj.utilcode.util.EmptyUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.lch.lottery.R;
-import com.lch.lottery.TabPage;
+import com.lch.lottery.common.BannerImageLoader;
+import com.lch.lottery.common.TabPage;
+import com.lch.lottery.eventbus.TopicListDataChangedEvent;
 import com.lch.lottery.topic.controller.TopicController;
+import com.lch.lottery.util.EventBusUtils;
 import com.lch.netkit.common.tool.VF;
 import com.lchli.pinedrecyclerlistview.library.pinnedListView.PinnedListView;
+import com.youth.banner.Banner;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -27,6 +39,9 @@ public class TopicListPage extends TabPage {
     private PinnedListView topicListView;
     private TopicListAdapter mTopicListAdapter;
     private View createTopicFab;
+    private View emptyView;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private Banner banner;
 
     public TopicListPage(@NonNull Context context) {
         super(context);
@@ -49,6 +64,18 @@ public class TopicListPage extends TabPage {
         View.inflate(getContext(), R.layout.page_topic_list, this);
         topicListView = VF.f(this, R.id.topicListView);
         createTopicFab = VF.f(this, R.id.createTopicFab);
+        swipeRefreshLayout = VF.f(this, R.id.swipeRefreshLayout);
+        emptyView = VF.f(this, R.id.emptyView);
+        banner = VF.f(this, R.id.banner);
+
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadTopics(false);
+            }
+        });
+
         mTopicListAdapter = new TopicListAdapter();
 
         topicListView.setPinnedAdapter(mTopicListAdapter);
@@ -58,44 +85,56 @@ public class TopicListPage extends TabPage {
                 WriteOrEditTopicActivity.launch(null, getContext());
             }
         });
+
+        banner.setImageLoader(new BannerImageLoader());
+        banner.setImages(Arrays.asList("https://www.baidu.com/img/bd_logo1.png","https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=3756930651,2591929300&fm=173&s=A4006DB54A23149C5F9981060300D0C1&w=218&h=146&img.JPEG"));
+        banner.start();
     }
 
     @Override
-    public void onCreateImpl() {
-        if (isCreated) {
-            return;
-        }
-        isCreated = true;
-
+    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
         mPresenter.setCallback(new TopicController.Callback() {
             @Override
             public void onGet(List<Object> data) {
+
+                swipeRefreshLayout.setRefreshing(false);
                 mTopicListAdapter.refresh(data);
+
+                if (EmptyUtils.isEmpty(data)) {
+                    emptyView.setVisibility(VISIBLE);
+                } else {
+                    emptyView.setVisibility(GONE);
+                }
             }
 
             @Override
             public void onFail(String msg) {
+                swipeRefreshLayout.setRefreshing(false);
                 ToastUtils.showLong(msg);
             }
 
         });
+        EventBusUtils.register(this);
+
+        loadTopics(true);
     }
 
     @Override
-    public void onDestroyImpl() {
-        if (isDestroyed) {
-            return;
-        }
-        isDestroyed = true;
-
+    public void onActivityDestroyed(Activity activity) {
         mPresenter.setCallback(null);
+        EventBusUtils.unregister(this);
     }
 
-    @Override
-    public void refresh() {
-        super.refresh();
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(TopicListDataChangedEvent event) {
+        loadTopics(true);
+    }
+
+
+    private void loadTopics(boolean setRefreshing) {
+        emptyView.setVisibility(GONE);
+        swipeRefreshLayout.setRefreshing(setRefreshing);
         mPresenter.getAllTopicsAndTag();
     }
-
 
 }
