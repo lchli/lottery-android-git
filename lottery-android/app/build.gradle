@@ -33,4 +33,5 @@ dependencies {
     compile 'com.github.lchli:NetKit:1.0.6'
     compile 'org.greenrobot:eventbus:3.1.1'
     compile 'com.youth.banner:banner:1.4.10'
+    compile 'com.github.rey5137:material:1.2.2'
 }

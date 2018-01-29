@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ColoredRatingBar">
+        <attr name="indicator" format="boolean" />
+        <attr name="rating" format="float" />
+        <attr name="type" format="enum">
+            <enum name="normal" value="0" />
+            <enum name="small" value="1" />
+        </attr>
+        <attr name="coloredRatingBarStyle" format="reference" />
+        <!-- Indicator RatingBar style. -->
+        <attr name="coloredRatingBarStyleIndicator" format="reference" />
+        <!-- Small RatingBar style. -->
+        <attr name="coloredRatingBarStyleSmall" format="reference" />
+        <!-- Small indicator RatingBar style. -->
+        <attr name="coloredRatingBarStyleSmallIndicator" format="reference" />
+    </declare-styleable>
+    
+     <declare-styleable name="viewPagerIndicator">
+        <attr name="selectedColor" format="reference|color" />
+        <attr name="unselectedColor" format="reference|color" />
+       
+        <attr name="indicatorR" format="dimension|reference" />
+       
+        <attr name="indicatorPadding" format="dimension|reference" />
+       
+    </declare-styleable>
+    
+     <declare-styleable name="CircleImageView">
+        <attr name="border_width" format="dimension" />
+        <attr name="border_color" format="color" />
+        <attr name="border_overlay" format="boolean" />
+    </declare-styleable>
+    
+     
+        
+    
+   <declare-styleable name="TabView">
+        <attr name="titles" format="reference" />
+        <attr name="foreColor" format="color" />
+        <attr name="bgColor" format="color" />
+        <attr name="pressColor" format="color" />
+        <attr name="borderColor" />
+        <attr name="round" />
+    </declare-styleable>
+    <declare-styleable name="ColorProgressBar">
+        <attr name="progress2" format="integer" />
+        <attr name="color2" format="color" />
+        <attr name="borderColor" />
+        <attr name="round" />
+        <attr name="text" format="string" />
+    </declare-styleable>
+
+    <attr name="borderColor" format="color" />
+    <attr name="round" format="dimension" />
+
+
+    <declare-styleable name="BottomSheetDialog">
+        <attr name="bsd_inDuration" format="reference|integer"/>
+        <attr name="bsd_inInterpolator" format="reference"/>
+        <attr name="bsd_outDuration" format="reference|integer"/>
+        <attr name="bsd_outInterpolator" format="reference"/>
+        <attr name="bsd_cancelable" format="reference|boolean"/>
+        <attr name="bsd_canceledOnTouchOutside" format="reference|boolean"/>
+        <attr name="bsd_dimAmount" format="reference|float"/>
+        <attr name="android:layout_height" />
+    </declare-styleable>
+
+    <declare-styleable name="CommonTitleView">
+        <attr name="icon_size" format="dimension" />
+        <attr name="text_color" format="color" />
+        <attr name="text_size" format="dimension" />
+        <attr name="padding" format="dimension" />
+    </declare-styleable>
+</resources>

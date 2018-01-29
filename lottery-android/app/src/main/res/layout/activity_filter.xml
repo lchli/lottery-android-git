@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/filter_condition_margin"
+            android:text="@string/filter_danma"
+            android:textSize="@dimen/filter_danma_textsize" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/danmaInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/etDanma"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:editable="false"
+                android:singleLine="true" />
+        </android.support.design.widget.TextInputLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/filter_condition_margin"
+            android:text="@string/filter_hewei"
+            android:textSize="@dimen/filter_danma_textsize" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/heweiInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/etHewei"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:editable="false"
+                android:singleLine="true" />
+        </android.support.design.widget.TextInputLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/filter_condition_margin"
+            android:text="@string/filter_kuadu"
+            android:textSize="@dimen/filter_danma_textsize" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/kuaduInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/etKuadu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:editable="false"
+                android:singleLine="true"
+
+                />
+        </android.support.design.widget.TextInputLayout>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/filter_condition_margin"
+            android:text="@string/filter_erma"
+            android:textSize="@dimen/filter_danma_textsize" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/ermaInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/etErma"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:editable="false"
+                android:singleLine="true" />
+        </android.support.design.widget.TextInputLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/filter_condition_margin"
+            android:text="@string/filter_shama"
+            android:textSize="@dimen/filter_danma_textsize" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/shamaInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/etShama"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:editable="false"
+                android:singleLine="true" />
+        </android.support.design.widget.TextInputLayout>
+    </LinearLayout>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/filter_condition_margin"
+        android:text="@string/filter_rongcuo_config"
+        android:textSize="@dimen/filter_danma_textsize" />
+
+    <com.lch.lottery.common.NoScrollGridView
+        android:id="@+id/rongCuoRecycler"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:numColumns="5"
+        />
+
+    <com.rey.material.widget.Button
+        android:id="@+id/btStartFilter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/filter_bt_margin"
+        android:background="@color/green_700"
+        android:text="@string/filter_bt_text"
+        android:textColor="@color/filter_button_textcolor"
+        app:rd_enable="true"
+        app:rd_rippleColor="@color/green_500"
+        app:rd_rippleType="wave" />
+
+
+</LinearLayout>

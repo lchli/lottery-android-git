@@ -4,4 +4,12 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="app_title_bg_color">#303F9F</color>
+    <color name="main_white_bg">#f0f0f0</color>
+    <color name="filter_result_textcolor">#aa000000</color>
+    <color name="filter_button_textcolor">#ffffff</color>
+    <color name="titleView_textcolor">#ffffff</color>
+    <color name="titleView_bg">#303F9F</color>
+    <color name="line_color">@android:color/darker_gray</color>
+    <color name="green_700">@android:color/holo_green_dark</color>
+    <color name="green_500">@android:color/holo_green_dark</color>
 </resources>
