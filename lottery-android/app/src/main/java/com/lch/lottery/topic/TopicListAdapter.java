@@ -1,17 +1,23 @@
 package com.lch.lottery.topic;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.TimeUtils;
 import com.lch.lottery.R;
+import com.lch.lottery.topic.model.AdResponse;
 import com.lch.lottery.topic.model.TopicResponse;
 import com.lch.netkit.common.tool.VF;
-import com.lchli.pinedrecyclerlistview.library.ListSectionData;
+import com.lch.netkit.imageloader.LiImageLoader;
 import com.lchli.pinedrecyclerlistview.library.pinnedListView.PinnedListAdapter;
+import com.youth.banner.Banner;
+import com.youth.banner.listener.OnBannerListener;
+import com.youth.banner.loader.ImageLoader;
+
+import java.util.List;
 
 /**
  * Created by bbt-team on 2017/12/15.
@@ -19,17 +25,23 @@ import com.lchli.pinedrecyclerlistview.library.pinnedListView.PinnedListAdapter;
 
 public class TopicListAdapter extends PinnedListAdapter {
 
-    public static final int TYPE_PIN = 0;
-    public static final int TYPE_ITEM = 1;
+    private static final int TYPE_ITEM = 0;
+    private static final int TYPE_ADD = 1;
+    private static final int TYPE_NOTICE = 2;
+    private static final int COUNT = 3;
 
     @Override
     public AbsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         switch (viewType) {
-            case TYPE_PIN:
-                return new PinHolder(TYPE_PIN, parent.getContext());
 
             case TYPE_ITEM:
                 return new ItemHolder(TYPE_ITEM, parent.getContext());
+
+            case TYPE_NOTICE:
+                return new NoticeHolder(TYPE_NOTICE, parent.getContext());
+
+            case TYPE_ADD:
+                return new AddHolder(TYPE_ADD, parent.getContext());
 
         }
         return null;
@@ -39,16 +51,7 @@ public class TopicListAdapter extends PinnedListAdapter {
     public void onBindViewHolder(AbsViewHolder holder, int position) {
         int viewType = getItemViewType(position);
         switch (viewType) {
-            case TYPE_PIN: {
-                TopicSection data = (TopicSection) getItem(position);
-                PinHolder vh = (PinHolder) holder;
-                if (TextUtils.isEmpty(data.tag)) {
-                    vh.pinName.setText("默认");
-                } else {
-                    vh.pinName.setText(data.tag);
-                }
-            }
-            break;
+
             case TYPE_ITEM: {
                 final TopicResponse.Topic data = (TopicResponse.Topic) getItem(position);
                 ItemHolder vh = (ItemHolder) holder;
@@ -63,30 +66,95 @@ public class TopicListAdapter extends PinnedListAdapter {
                 });
             }
             break;
+
+            case TYPE_ADD: {
+                final AdResponse data = (AdResponse) getItem(position);
+                final List<AdResponse.Ad> ads = data.data;
+
+                AddHolder vh = (AddHolder) holder;
+                vh.banner.setImages(ads);
+                vh.banner.setImageLoader(new ImageLoader() {
+                    @Override
+                    public void displayImage(Context context, Object path, ImageView imageView) {
+                        AdResponse.Ad ad = (AdResponse.Ad) path;
+
+                        LiImageLoader.instance().builder()
+                                .source(ad.imgUrl)
+                                .view(imageView)
+                                .display(context);
+
+                    }
+                });
+                vh.banner.setOnBannerListener(new OnBannerListener() {
+                    @Override
+                    public void OnBannerClick(int position) {
+                        AdResponse.Ad ad = ads.get(position);
+
+                    }
+                });
+                vh.banner.start();
+            }
+            break;
+
+            case TYPE_NOTICE: {
+                NoticeHolder vh = (NoticeHolder) holder;
+                vh.pinName.setText("最新开奖：256期 开奖号123 试机号098");
+            }
+            break;
         }
     }
 
     @Override
     public int getItemViewType(int position) {
-        Object o = getItem(position);
-        if (o instanceof TopicResponse.Topic) {
-            return TYPE_ITEM;
-        } else if (o instanceof ListSectionData) {
-            return ((ListSectionData) o).sectionViewType;
+
+        Object obj = getItem(position);
+
+        if (obj instanceof AdResponse) {
+            return TYPE_ADD;
         }
-        return super.getItemViewType(position);
+
+        if (obj instanceof TopicResponse.Topic) {
+            return TYPE_ITEM;
+        }
+
+        return TYPE_NOTICE;
+
     }
 
-    private class PinHolder extends AbsViewHolder {
+
+    @Override
+    public int getViewTypeCount() {
+        return COUNT;
+    }
+
+    private class NoticeHolder extends AbsViewHolder {
 
         private final View itemView;
         private final TextView pinName;
 
 
-        public PinHolder(int viewType, Context context) {
+        public NoticeHolder(int viewType, Context context) {
             super(viewType);
             itemView = View.inflate(context, R.layout.item_topic_pin, null);
             pinName = VF.f(itemView, R.id.pinName);
+        }
+
+        @Override
+        protected View getItemView() {
+            return itemView;
+        }
+    }
+
+    private class AddHolder extends AbsViewHolder {
+
+        private final View itemView;
+        private final Banner banner;
+
+
+        public AddHolder(int viewType, Context context) {
+            super(viewType);
+            itemView = View.inflate(context, R.layout.list_item_banner, null);
+            banner = VF.f(itemView, R.id.banner);
         }
 
         @Override

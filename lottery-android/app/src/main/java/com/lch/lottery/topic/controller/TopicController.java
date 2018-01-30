@@ -4,8 +4,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
 import com.lch.lottery.DI;
-import com.lch.lottery.topic.TopicListAdapter;
-import com.lch.lottery.topic.TopicSection;
+import com.lch.lottery.topic.model.AdResponse;
 import com.lch.lottery.topic.model.TopicResponse;
 import com.lch.lottery.topic.repository.TopicRepo;
 import com.lch.lottery.user.model.UserResponse;
@@ -14,8 +13,6 @@ import com.lch.netkit.NetKit;
 import com.lch.netkit.string.ResponseValue;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -75,42 +72,27 @@ public class TopicController {
 
                 if (res.err != null) {
                     onFail(res.err.msg);
-                    return;
+                    // return;
                 }
-
-                if (res.data == null || res.data.isEmpty()) {
-                    NetKit.runInUI(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (callback != null) {
-                                callback.onGet(null);
-                            }
-                        }
-                    });
-                    return;
-                }
-
-                Collections.sort(res.data, new Comparator<TopicResponse.Topic>() {
-                    @Override
-                    public int compare(TopicResponse.Topic o1, TopicResponse.Topic o2) {
-                        if (o1.tag == null || o2.tag == null) {
-                            return 0;
-                        }
-                        return o1.tag.compareTo(o2.tag);
-                    }
-                });
 
                 final List<Object> datas = new ArrayList<>();
 
-                String preTag = null;
+                AdResponse adRes = new AdResponse();
+                adRes.data = new ArrayList<>();
 
-                for (TopicResponse.Topic top : res.data) {
-                    if (top.tag != null && !top.tag.equals(preTag)) {
-                        datas.add(new TopicSection(TopicListAdapter.TYPE_PIN, top.tag));
-                    }
-                    datas.add(top);
+                AdResponse.Ad ad = new AdResponse.Ad();
+                ad.imgUrl = "https://www.baidu.com/img/bd_logo1.png";
+                adRes.data.add(ad);
 
-                    preTag = top.tag;
+                ad = new AdResponse.Ad();
+                ad.imgUrl = "https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=3756930651,2591929300&fm=173&s=A4006DB54A23149C5F9981060300D0C1&w=218&h=146&img.JPEG";
+                adRes.data.add(ad);
+
+                datas.add(adRes);
+                datas.add(new Object());
+
+                if (res.data != null) {
+                    datas.addAll(res.data);
                 }
 
                 NetKit.runInUI(new Runnable() {

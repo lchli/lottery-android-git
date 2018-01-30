@@ -9,7 +9,7 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:background="#28b4a9"
+        android:background="@color/colorPrimary"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -38,7 +38,7 @@
         style="@style/UserCenterListLayout"
         android:layout_marginTop="10dp"
         app:UserCenterListItem_icon="@drawable/ic_home_black_24dp"
-        app:UserCenterListItem_text="版本号：1.0  作者：老李" />
+        app:UserCenterListItem_text="版本号：1.0" />
 
     <com.lch.lottery.user.UserCenterListItem
         android:id="@+id/check_update_widget"

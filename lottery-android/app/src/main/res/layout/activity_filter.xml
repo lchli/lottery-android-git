@@ -166,12 +166,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/filter_bt_margin"
-        android:background="@color/green_700"
+        android:background="@color/colorPrimary"
         android:text="@string/filter_bt_text"
         android:textColor="@color/filter_button_textcolor"
-        app:rd_enable="true"
-        app:rd_rippleColor="@color/green_500"
-        app:rd_rippleType="wave" />
+        app:rd_enable="false"
+        />
 
 
 </LinearLayout>

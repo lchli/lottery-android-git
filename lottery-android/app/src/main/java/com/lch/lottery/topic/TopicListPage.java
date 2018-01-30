@@ -9,23 +9,21 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 import android.view.View;
+import android.widget.EditText;
 
 import com.blankj.utilcode.util.EmptyUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.lch.lottery.R;
-import com.lch.lottery.common.BannerImageLoader;
 import com.lch.lottery.common.TabPage;
 import com.lch.lottery.eventbus.TopicListDataChangedEvent;
 import com.lch.lottery.topic.controller.TopicController;
 import com.lch.lottery.util.EventBusUtils;
 import com.lch.netkit.common.tool.VF;
 import com.lchli.pinedrecyclerlistview.library.pinnedListView.PinnedListView;
-import com.youth.banner.Banner;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -41,7 +39,7 @@ public class TopicListPage extends TabPage {
     private View createTopicFab;
     private View emptyView;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private Banner banner;
+    private EditText etSearchKey;
 
     public TopicListPage(@NonNull Context context) {
         super(context);
@@ -66,7 +64,8 @@ public class TopicListPage extends TabPage {
         createTopicFab = VF.f(this, R.id.createTopicFab);
         swipeRefreshLayout = VF.f(this, R.id.swipeRefreshLayout);
         emptyView = VF.f(this, R.id.emptyView);
-        banner = VF.f(this, R.id.banner);
+        etSearchKey = VF.f(this, R.id.etSearchKey);
+
 
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -86,9 +85,6 @@ public class TopicListPage extends TabPage {
             }
         });
 
-        banner.setImageLoader(new BannerImageLoader());
-        banner.setImages(Arrays.asList("https://www.baidu.com/img/bd_logo1.png","https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=3756930651,2591929300&fm=173&s=A4006DB54A23149C5F9981060300D0C1&w=218&h=146&img.JPEG"));
-        banner.start();
     }
 
     @Override
