@@ -17,7 +17,7 @@ public interface TopicRepo {
     @NonNull
     ResponseValue<List<TopicResponse.Topic>> getTopics(String sort, String sortDirect,
                                                        String tag, String title,
-                                                       String topicId, String userId);
+                                                       String topicId, String userId,int page,int pageSize);
     @NonNull
     ResponseValue addOrUpdateTopic(TopicResponse.Topic topic);
 

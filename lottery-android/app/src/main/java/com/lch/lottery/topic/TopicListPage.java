@@ -10,6 +10,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -49,7 +50,7 @@ public class TopicListPage extends TabPage {
     private TextView tvStartSearch;
     private TextView tvSorter;
 
-    private SearchType searchType = SearchType.TITLE;
+    private SearchType searchType = SearchType.ALL;
     private TopicSorter sorter = TopicSorter.TIME_ASC;
 
 
@@ -100,7 +101,7 @@ public class TopicListPage extends TabPage {
         tvStartSearch.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchTopics(true);
+                loadTopics(true);
             }
         });
         tvSorter.setOnClickListener(new OnClickListener() {
@@ -117,6 +118,22 @@ public class TopicListPage extends TabPage {
             @Override
             public void onClick(View v) {
                 WriteOrEditTopicActivity.launch(null, getContext());
+            }
+        });
+
+        topicListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+                if(!view.canScrollVertically(1)){
+                    loadMore();
+                }
+
             }
         });
 
@@ -225,13 +242,6 @@ public class TopicListPage extends TabPage {
         emptyView.setVisibility(GONE);
         swipeRefreshLayout.setRefreshing(setRefreshing);
 
-        mPresenter.getAllTopicsAndTag();
-    }
-
-    private void searchTopics(boolean setRefreshing) {
-        emptyView.setVisibility(GONE);
-        swipeRefreshLayout.setRefreshing(setRefreshing);
-
         switch (searchType) {
             case TITLE:
                 mPresenter.getTopics(sorter.sortField(), sorter.sortDirec(), null, etSearchKey.getText().toString(), null, null);
@@ -239,8 +249,26 @@ public class TopicListPage extends TabPage {
             case TAG:
                 mPresenter.getTopics(sorter.sortField(), sorter.sortDirec(), etSearchKey.getText().toString(), null, null, null);
                 break;
+            case ALL:
+                mPresenter.getTopics(sorter.sortField(), sorter.sortDirec(), null, null, null, null);
+                break;
         }
 
+    }
+
+
+    private void loadMore() {
+        switch (searchType) {
+            case TITLE:
+                mPresenter.loadMore(sorter.sortField(), sorter.sortDirec(), null, etSearchKey.getText().toString(), null, null);
+                break;
+            case TAG:
+                mPresenter.loadMore(sorter.sortField(), sorter.sortDirec(), etSearchKey.getText().toString(), null, null, null);
+                break;
+            case ALL:
+                mPresenter.loadMore(sorter.sortField(), sorter.sortDirec(), null, null, null, null);
+                break;
+        }
     }
 
 }

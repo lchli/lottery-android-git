@@ -5,6 +5,7 @@ package com.lch.lottery.topic.model;
  */
 
 public enum SearchType {
+    ALL,
     TITLE,
     TAG;
 
@@ -15,6 +16,8 @@ public enum SearchType {
                 return "标题";
             case TAG:
                 return "标签";
+            case ALL:
+                return "全部";
         }
         return null;
     }

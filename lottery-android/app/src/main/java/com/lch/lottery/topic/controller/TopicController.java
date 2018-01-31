@@ -42,15 +42,16 @@ public class TopicController {
     private NoticeRepo noticeRepo = DI.injectNoticeRepo();
 
     private Callback callback;
+    private int page = 0;
+    private static final int PAGE_SIZE = 50;
+    private List<TopicResponse.Topic> totalTopics = new ArrayList<>();
+    private boolean isHaveMore = true;
 
 
     public void setCallback(Callback callback) {
         this.callback = callback;
     }
 
-    public void getAllTopicsAndTag() {
-        getTopics(null, null, null, null, null, null);
-    }
 
     public void getMyTopics() {
         ResponseValue<UserResponse.User> res = localUserRepo.getCurrentUser();
@@ -62,8 +63,19 @@ public class TopicController {
         getTopics(null, null, null, null, null, res.data.userId);
     }
 
-
     public void getTopics(final String sort, final String sortDirect,
+                          final String tag, final String title,
+                          final String topicId, final String userId) {
+
+        page = 0;
+        isHaveMore = true;
+        totalTopics.clear();
+
+        getTopicsImpl(sort, sortDirect, tag, title, topicId, userId);
+    }
+
+
+    private void getTopicsImpl(final String sort, final String sortDirect,
                                final String tag, final String title,
                                final String topicId, final String userId) {
 
@@ -73,7 +85,7 @@ public class TopicController {
                 final List<Object> datas = new ArrayList<>();
 
                 final ResponseValue<List<TopicResponse.Topic>> topicRes = topicRepo.getTopics(sort, sortDirect, tag,
-                        title, topicId, userId);
+                        title, topicId, userId, page, PAGE_SIZE);
                 if (topicRes.err != null) {
                     onFail(topicRes.err.msg);
                 }
@@ -97,9 +109,19 @@ public class TopicController {
                     datas.add(noticeRes.data);
                 }
 
-                if (topicRes.data != null) {
-                    datas.addAll(topicRes.data);
+                if (EmptyUtils.isNotEmpty(topicRes.data)) {
+                    totalTopics.addAll(topicRes.data);
                 }
+
+                if (topicRes.err == null) {//no err.
+                    if (EmptyUtils.isEmpty(topicRes.data) || topicRes.data.size() < PAGE_SIZE) {
+                        isHaveMore = false;
+                    } else {
+                        page++;
+                    }
+                }
+
+                datas.addAll(totalTopics);
 
                 NetKit.runInUI(new Runnable() {
                     @Override
@@ -114,6 +136,17 @@ public class TopicController {
         });
 
 
+    }
+
+
+    public void loadMore(final String sort, final String sortDirect,
+                         final String tag, final String title,
+                         final String topicId, final String userId) {
+        if (!isHaveMore) {
+            return;
+        }
+
+        getTopicsImpl(sort, sortDirect, tag, title, topicId, userId);
     }
 
 

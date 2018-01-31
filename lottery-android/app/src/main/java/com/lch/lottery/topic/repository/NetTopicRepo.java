@@ -27,7 +27,7 @@ public class NetTopicRepo implements TopicRepo {
     @Override
     public ResponseValue<List<TopicResponse.Topic>> getTopics(String sort, String sortDirect,
                                                               String tag, String title,
-                                                              String topicId, String userId) {
+                                                              String topicId, String userId,int page,int pageSize) {
         StringRequestParams params = new StringRequestParams()
                 .addParam("sort", sort)
                 .addParam("sortDirect", sortDirect)
@@ -35,6 +35,8 @@ public class NetTopicRepo implements TopicRepo {
                 .addParam("title", title)
                 .addParam("topicId", topicId)
                 .addParam("userId", userId)
+                .addParam("page", page+"")
+                .addParam("pageSize", pageSize+"")
                 .setUrl(ApiUrl.TOPIC_GET);
 
         return NetKit.stringRequest().getSync(params, new Parser<List<TopicResponse.Topic>>() {
