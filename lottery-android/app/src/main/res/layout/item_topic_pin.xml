@@ -2,13 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="5dp"
     android:orientation="horizontal">
-    <TextView
+
+    <com.lch.lottery.common.VerticalScrollTextView
         android:id="@+id/pinName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/holo_red_light"
-        android:textSize="12sp"
-        android:text="lich" />
+        app:vst_textSize="12sp"
+        app:vst_textColor="@android:color/holo_red_light"
+         />
 </LinearLayout>

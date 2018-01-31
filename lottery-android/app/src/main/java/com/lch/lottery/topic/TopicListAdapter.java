@@ -8,7 +8,9 @@ import android.widget.TextView;
 
 import com.blankj.utilcode.util.TimeUtils;
 import com.lch.lottery.R;
+import com.lch.lottery.common.VerticalScrollTextView;
 import com.lch.lottery.topic.model.AdResponse;
+import com.lch.lottery.topic.model.NoticeResponse;
 import com.lch.lottery.topic.model.TopicResponse;
 import com.lch.netkit.common.tool.VF;
 import com.lch.netkit.imageloader.LiImageLoader;
@@ -97,8 +99,11 @@ public class TopicListAdapter extends PinnedListAdapter {
             break;
 
             case TYPE_NOTICE: {
+                final NoticeResponse data = (NoticeResponse) getItem(position);
+
                 NoticeHolder vh = (NoticeHolder) holder;
-                vh.pinName.setText("最新开奖：256期 开奖号123 试机号098");
+                vh.pinName.setDataSource(data.data);
+                vh.pinName.startPlay();
             }
             break;
         }
@@ -130,7 +135,7 @@ public class TopicListAdapter extends PinnedListAdapter {
     private class NoticeHolder extends AbsViewHolder {
 
         private final View itemView;
-        private final TextView pinName;
+        private final VerticalScrollTextView pinName;
 
 
         public NoticeHolder(int viewType, Context context) {

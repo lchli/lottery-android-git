@@ -19,6 +19,7 @@
             android:layout_height="wrap_content"
             android:drawableRight="@android:drawable/arrow_down_float"
             android:text="标题"
+            android:textSize="16sp"
             android:textColor="@android:color/white" />
 
         <EditText
@@ -41,6 +42,7 @@
             android:paddingRight="10dp"
             android:paddingTop="5dp"
             android:text="搜索"
+            android:textSize="16sp"
             android:textColor="@android:color/white" />
 
         <TextView
@@ -50,6 +52,7 @@
             android:layout_marginLeft="5dp"
             android:drawableRight="@android:drawable/arrow_down_float"
             android:text="排序"
+            android:textSize="16sp"
             android:textColor="@android:color/white" />
 
 

@@ -9,14 +9,19 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.blankj.utilcode.util.EmptyUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.lch.lottery.R;
+import com.lch.lottery.common.BottomSheetDialog;
 import com.lch.lottery.common.TabPage;
 import com.lch.lottery.eventbus.TopicListDataChangedEvent;
 import com.lch.lottery.topic.controller.TopicController;
+import com.lch.lottery.topic.model.SearchType;
+import com.lch.lottery.topic.model.TopicSorter;
 import com.lch.lottery.util.EventBusUtils;
 import com.lch.netkit.common.tool.VF;
 import com.lchli.pinedrecyclerlistview.library.pinnedListView.PinnedListView;
@@ -40,6 +45,13 @@ public class TopicListPage extends TabPage {
     private View emptyView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private EditText etSearchKey;
+    private TextView tvSearchBy;
+    private TextView tvStartSearch;
+    private TextView tvSorter;
+
+    private SearchType searchType = SearchType.TITLE;
+    private TopicSorter sorter = TopicSorter.TIME_ASC;
+
 
     public TopicListPage(@NonNull Context context) {
         super(context);
@@ -65,13 +77,36 @@ public class TopicListPage extends TabPage {
         swipeRefreshLayout = VF.f(this, R.id.swipeRefreshLayout);
         emptyView = VF.f(this, R.id.emptyView);
         etSearchKey = VF.f(this, R.id.etSearchKey);
+        tvSearchBy = VF.f(this, R.id.tvSearchBy);
+        tvStartSearch = VF.f(this, R.id.tvStartSearch);
+        tvSorter = VF.f(this, R.id.tvSorter);
 
+        tvSearchBy.setText(searchType.toString());
+        tvSorter.setText(sorter.toString());
 
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 loadTopics(false);
+            }
+        });
+        tvSearchBy.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSearchBy();
+            }
+        });
+        tvStartSearch.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchTopics(true);
+            }
+        });
+        tvSorter.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSortBy();
             }
         });
 
@@ -85,6 +120,65 @@ public class TopicListPage extends TabPage {
             }
         });
 
+    }
+
+    private void showSearchBy() {
+        BottomSheetDialog mDialog = new BottomSheetDialog(getContext());
+        View root = View.inflate(getContext(), R.layout.topic_search_by, null);
+        final TextView tvByTitle = VF.f(root, R.id.tvByTitle);
+        final TextView tvByTag = VF.f(root, R.id.tvByTag);
+
+        tvByTitle.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchType = SearchType.TITLE;
+                tvSearchBy.setText(searchType.toString());
+            }
+        });
+        tvByTag.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchType = SearchType.TAG;
+                tvSearchBy.setText(searchType.toString());
+            }
+        });
+
+        mDialog.contentView(root)
+                .heightParam(ViewGroup.LayoutParams.WRAP_CONTENT)
+                .inDuration(200)
+                .outDuration(200)
+                .cancelable(true)
+                .show();
+    }
+
+
+    private void showSortBy() {
+        BottomSheetDialog mDialog = new BottomSheetDialog(getContext());
+        View root = View.inflate(getContext(), R.layout.topic_sort_by, null);
+        final TextView tvTimeAsc = VF.f(root, R.id.tvTimeAsc);
+        final TextView tvTimeDesc = VF.f(root, R.id.tvTimeDesc);
+
+        tvTimeAsc.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sorter = TopicSorter.TIME_ASC;
+                tvSorter.setText(sorter.toString());
+            }
+        });
+        tvTimeDesc.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sorter = TopicSorter.TIME_DESC;
+                tvSorter.setText(sorter.toString());
+            }
+        });
+
+        mDialog.contentView(root)
+                .heightParam(ViewGroup.LayoutParams.WRAP_CONTENT)
+                .inDuration(200)
+                .outDuration(200)
+                .cancelable(true)
+                .show();
     }
 
     @Override
@@ -130,7 +224,23 @@ public class TopicListPage extends TabPage {
     private void loadTopics(boolean setRefreshing) {
         emptyView.setVisibility(GONE);
         swipeRefreshLayout.setRefreshing(setRefreshing);
+
         mPresenter.getAllTopicsAndTag();
+    }
+
+    private void searchTopics(boolean setRefreshing) {
+        emptyView.setVisibility(GONE);
+        swipeRefreshLayout.setRefreshing(setRefreshing);
+
+        switch (searchType) {
+            case TITLE:
+                mPresenter.getTopics(sorter.sortField(), sorter.sortDirec(), null, etSearchKey.getText().toString(), null, null);
+                break;
+            case TAG:
+                mPresenter.getTopics(sorter.sortField(), sorter.sortDirec(), etSearchKey.getText().toString(), null, null, null);
+                break;
+        }
+
     }
 
 }

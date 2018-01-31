@@ -3,9 +3,13 @@ package com.lch.lottery.topic.controller;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
 
+import com.blankj.utilcode.util.EmptyUtils;
 import com.lch.lottery.DI;
 import com.lch.lottery.topic.model.AdResponse;
+import com.lch.lottery.topic.model.NoticeResponse;
 import com.lch.lottery.topic.model.TopicResponse;
+import com.lch.lottery.topic.repository.AdRepo;
+import com.lch.lottery.topic.repository.NoticeRepo;
 import com.lch.lottery.topic.repository.TopicRepo;
 import com.lch.lottery.user.model.UserResponse;
 import com.lch.lottery.user.repository.UserRepo;
@@ -34,6 +38,9 @@ public class TopicController {
 
     private TopicRepo topicRepo = DI.injectTopicRepo();
     private UserRepo localUserRepo = DI.injectLocalUserRepo();
+    private AdRepo adRepo = DI.injectAdRepo();
+    private NoticeRepo noticeRepo = DI.injectNoticeRepo();
+
     private Callback callback;
 
 
@@ -42,7 +49,7 @@ public class TopicController {
     }
 
     public void getAllTopicsAndTag() {
-        getTopicsImpl(null, null, null, null, null, null);
+        getTopics(null, null, null, null, null, null);
     }
 
     public void getMyTopics() {
@@ -52,47 +59,46 @@ public class TopicController {
             return;
         }
 
-        getTopicsImpl(null, null, null, null, null, res.data.userId);
+        getTopics(null, null, null, null, null, res.data.userId);
     }
 
 
-    private void getTopicsImpl(final String sort, final String sortDirect,
+    public void getTopics(final String sort, final String sortDirect,
                                final String tag, final String title,
                                final String topicId, final String userId) {
 
         NetKit.runAsync(new Runnable() {
             @Override
             public void run() {
-                final ResponseValue<List<TopicResponse.Topic>> res = topicRepo.getTopics(sort, sortDirect, tag,
-                        title, topicId, userId);
-                if (res == null) {
-                    onFail("res is null");
-                    return;
-                }
-
-                if (res.err != null) {
-                    onFail(res.err.msg);
-                    // return;
-                }
-
                 final List<Object> datas = new ArrayList<>();
 
-                AdResponse adRes = new AdResponse();
-                adRes.data = new ArrayList<>();
+                final ResponseValue<List<TopicResponse.Topic>> topicRes = topicRepo.getTopics(sort, sortDirect, tag,
+                        title, topicId, userId);
+                if (topicRes.err != null) {
+                    onFail(topicRes.err.msg);
+                }
 
-                AdResponse.Ad ad = new AdResponse.Ad();
-                ad.imgUrl = "https://www.baidu.com/img/bd_logo1.png";
-                adRes.data.add(ad);
+                ResponseValue<AdResponse> adRes = adRepo.getAd();
+                if (adRes.err != null) {
+                    onFail(adRes.err.msg);
+                }
 
-                ad = new AdResponse.Ad();
-                ad.imgUrl = "https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=3756930651,2591929300&fm=173&s=A4006DB54A23149C5F9981060300D0C1&w=218&h=146&img.JPEG";
-                adRes.data.add(ad);
+                ResponseValue<NoticeResponse> noticeRes = noticeRepo.getNotice();
+                if (noticeRes.err != null) {
+                    onFail(noticeRes.err.msg);
+                }
+//
 
-                datas.add(adRes);
-                datas.add(new Object());
+                if (adRes.data != null && EmptyUtils.isNotEmpty(adRes.data.data)) {
+                    datas.add(adRes.data);
+                }
 
-                if (res.data != null) {
-                    datas.addAll(res.data);
+                if (noticeRes.data != null && EmptyUtils.isNotEmpty(noticeRes.data.data)) {
+                    datas.add(noticeRes.data);
+                }
+
+                if (topicRes.data != null) {
+                    datas.addAll(topicRes.data);
                 }
 
                 NetKit.runInUI(new Runnable() {
