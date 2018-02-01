@@ -84,7 +84,7 @@
                 android:gravity="center"
                 android:text="还没有数据" />
 
-            <com.lchli.pinedrecyclerlistview.library.pinnedListView.PinnedListView
+            <com.github.jdsjlzx.recyclerview.LRecyclerView
                 android:id="@+id/topicListView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />

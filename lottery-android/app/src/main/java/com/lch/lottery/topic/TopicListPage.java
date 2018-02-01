@@ -7,15 +7,19 @@ import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.EmptyUtils;
 import com.blankj.utilcode.util.ToastUtils;
+import com.github.jdsjlzx.interfaces.OnLoadMoreListener;
+import com.github.jdsjlzx.interfaces.OnRefreshListener;
+import com.github.jdsjlzx.recyclerview.LRecyclerView;
+import com.github.jdsjlzx.recyclerview.LRecyclerViewAdapter;
 import com.lch.lottery.R;
 import com.lch.lottery.common.BottomSheetDialog;
 import com.lch.lottery.common.TabPage;
@@ -25,7 +29,6 @@ import com.lch.lottery.topic.model.SearchType;
 import com.lch.lottery.topic.model.TopicSorter;
 import com.lch.lottery.util.EventBusUtils;
 import com.lch.netkit.common.tool.VF;
-import com.lchli.pinedrecyclerlistview.library.pinnedListView.PinnedListView;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -40,11 +43,10 @@ public class TopicListPage extends TabPage {
 
 
     private final TopicController mPresenter = new TopicController();
-    private PinnedListView topicListView;
+    private LRecyclerView topicListView;
     private TopicListAdapter mTopicListAdapter;
     private View createTopicFab;
     private View emptyView;
-    private SwipeRefreshLayout swipeRefreshLayout;
     private EditText etSearchKey;
     private TextView tvSearchBy;
     private TextView tvStartSearch;
@@ -75,7 +77,6 @@ public class TopicListPage extends TabPage {
         View.inflate(getContext(), R.layout.page_topic_list, this);
         topicListView = VF.f(this, R.id.topicListView);
         createTopicFab = VF.f(this, R.id.createTopicFab);
-        swipeRefreshLayout = VF.f(this, R.id.swipeRefreshLayout);
         emptyView = VF.f(this, R.id.emptyView);
         etSearchKey = VF.f(this, R.id.etSearchKey);
         tvSearchBy = VF.f(this, R.id.tvSearchBy);
@@ -85,13 +86,6 @@ public class TopicListPage extends TabPage {
         tvSearchBy.setText(searchType.toString());
         tvSorter.setText(sorter.toString());
 
-        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                loadTopics(false);
-            }
-        });
         tvSearchBy.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,7 +107,8 @@ public class TopicListPage extends TabPage {
 
         mTopicListAdapter = new TopicListAdapter();
 
-        topicListView.setPinnedAdapter(mTopicListAdapter);
+        topicListView.setLayoutManager(new LinearLayoutManager(getContext()));
+        topicListView.setAdapter(new LRecyclerViewAdapter(mTopicListAdapter));
         createTopicFab.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,26 +116,24 @@ public class TopicListPage extends TabPage {
             }
         });
 
-        topicListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+        topicListView.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
-                if(!view.canScrollVertically(1)){
-                    loadMore();
-                }
-
+            public void onLoadMore() {
+                loadMore();
             }
         });
+        topicListView.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadTopics(false);
+            }
+        });
+
 
     }
 
     private void showSearchBy() {
-        BottomSheetDialog mDialog = new BottomSheetDialog(getContext());
+        final BottomSheetDialog mDialog = new BottomSheetDialog(getContext());
         View root = View.inflate(getContext(), R.layout.topic_search_by, null);
         final TextView tvByTitle = VF.f(root, R.id.tvByTitle);
         final TextView tvByTag = VF.f(root, R.id.tvByTag);
@@ -150,6 +143,7 @@ public class TopicListPage extends TabPage {
             public void onClick(View v) {
                 searchType = SearchType.TITLE;
                 tvSearchBy.setText(searchType.toString());
+                mDialog.dismiss();
             }
         });
         tvByTag.setOnClickListener(new OnClickListener() {
@@ -157,6 +151,7 @@ public class TopicListPage extends TabPage {
             public void onClick(View v) {
                 searchType = SearchType.TAG;
                 tvSearchBy.setText(searchType.toString());
+                mDialog.dismiss();
             }
         });
 
@@ -170,7 +165,7 @@ public class TopicListPage extends TabPage {
 
 
     private void showSortBy() {
-        BottomSheetDialog mDialog = new BottomSheetDialog(getContext());
+        final BottomSheetDialog mDialog = new BottomSheetDialog(getContext());
         View root = View.inflate(getContext(), R.layout.topic_sort_by, null);
         final TextView tvTimeAsc = VF.f(root, R.id.tvTimeAsc);
         final TextView tvTimeDesc = VF.f(root, R.id.tvTimeDesc);
@@ -180,6 +175,7 @@ public class TopicListPage extends TabPage {
             public void onClick(View v) {
                 sorter = TopicSorter.TIME_ASC;
                 tvSorter.setText(sorter.toString());
+                mDialog.dismiss();
             }
         });
         tvTimeDesc.setOnClickListener(new OnClickListener() {
@@ -187,6 +183,7 @@ public class TopicListPage extends TabPage {
             public void onClick(View v) {
                 sorter = TopicSorter.TIME_DESC;
                 tvSorter.setText(sorter.toString());
+                mDialog.dismiss();
             }
         });
 
@@ -204,7 +201,7 @@ public class TopicListPage extends TabPage {
             @Override
             public void onGet(List<Object> data) {
 
-                swipeRefreshLayout.setRefreshing(false);
+                topicListView.on(false);
                 mTopicListAdapter.refresh(data);
 
                 if (EmptyUtils.isEmpty(data)) {

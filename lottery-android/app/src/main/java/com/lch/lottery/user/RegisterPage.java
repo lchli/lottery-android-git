@@ -7,6 +7,7 @@ import android.widget.EditText;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.lch.lottery.R;
+import com.lch.lottery.common.CommonTitleView;
 import com.lch.lottery.common.TabPage;
 import com.lch.lottery.user.controller.UserController;
 import com.lch.lottery.user.model.UserResponse;
@@ -21,11 +22,11 @@ import java.lang.ref.WeakReference;
 public class RegisterPage extends TabPage {
 
     private final UserPage userPage;
-    private View gotoLoginBT;
     private View registerBT;
     private EditText userAccountET;
     private EditText userPwdET;
     private EditText userRePwdET;
+    private CommonTitleView common_title;
     private UserController userController = new UserController();
 
     public RegisterPage(@NonNull Context context, UserPage userPage) {
@@ -36,20 +37,23 @@ public class RegisterPage extends TabPage {
 
 
     protected void init() {
-        View.inflate(getContext(), R.layout.page_register, this);
-        gotoLoginBT = VF.f(this, R.id.gotoLoginBT);
-        registerBT = VF.f(this, R.id.registerBT);
-        userAccountET = VF.f(this, R.id.userAccountET);
-        userPwdET = VF.f(this, R.id.userPwdET);
-        userRePwdET = VF.f(this, R.id.userRePwdET);
+        View.inflate(getContext(), R.layout.fragment_register, this);
 
+        registerBT = VF.f(this, R.id.register_widget);
+        userAccountET = VF.f(this, R.id.user_account_edit);
+        userRePwdET = VF.f(this, R.id.user_repwd_edit);
+        userPwdET = VF.f(this, R.id.user_pwd_edit);
+        common_title = VF.f(this, R.id.common_title);
 
-        gotoLoginBT.setOnClickListener(new OnClickListener() {
+        common_title.setCenterText(getResources().getString(R.string.register), null);
+        common_title.addRightText(getResources().getString(R.string.goto_login), new OnClickListener() {
             @Override
             public void onClick(View v) {
                 userPage.gotoLogin();
             }
         });
+
+
         registerBT.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

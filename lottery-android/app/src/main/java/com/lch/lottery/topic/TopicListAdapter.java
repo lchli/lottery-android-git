@@ -1,6 +1,7 @@
 package com.lch.lottery.topic;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -12,9 +13,9 @@ import com.lch.lottery.common.VerticalScrollTextView;
 import com.lch.lottery.topic.model.AdResponse;
 import com.lch.lottery.topic.model.NoticeResponse;
 import com.lch.lottery.topic.model.TopicResponse;
+import com.lch.netkit.common.base.BaseRecyclerAdapter;
 import com.lch.netkit.common.tool.VF;
 import com.lch.netkit.imageloader.LiImageLoader;
-import com.lchli.pinedrecyclerlistview.library.pinnedListView.PinnedListAdapter;
 import com.youth.banner.Banner;
 import com.youth.banner.listener.OnBannerListener;
 import com.youth.banner.loader.ImageLoader;
@@ -25,33 +26,42 @@ import java.util.List;
  * Created by bbt-team on 2017/12/15.
  */
 
-public class TopicListAdapter extends PinnedListAdapter {
+public class TopicListAdapter extends BaseRecyclerAdapter<Object> {
 
     private static final int TYPE_ITEM = 0;
     private static final int TYPE_ADD = 1;
     private static final int TYPE_NOTICE = 2;
     private static final int COUNT = 3;
 
+
     @Override
-    public AbsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+        View itemView;
+
         switch (viewType) {
 
             case TYPE_ITEM:
-                return new ItemHolder(TYPE_ITEM, parent.getContext());
+                itemView = View.inflate(parent.getContext(), R.layout.item_topic, null);
+
+                return new ItemHolder(itemView);
 
             case TYPE_NOTICE:
-                return new NoticeHolder(TYPE_NOTICE, parent.getContext());
+                itemView = View.inflate(parent.getContext(), R.layout.item_topic_pin, null);
+                return new NoticeHolder(itemView);
 
             case TYPE_ADD:
-                return new AddHolder(TYPE_ADD, parent.getContext());
+                itemView = View.inflate(parent.getContext(), R.layout.list_item_banner, null);
+                return new AddHolder(itemView);
 
         }
         return null;
     }
 
     @Override
-    public void onBindViewHolder(AbsViewHolder holder, int position) {
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         int viewType = getItemViewType(position);
+
         switch (viewType) {
 
             case TYPE_ITEM: {
@@ -109,6 +119,7 @@ public class TopicListAdapter extends PinnedListAdapter {
         }
     }
 
+
     @Override
     public int getItemViewType(int position) {
 
@@ -127,65 +138,45 @@ public class TopicListAdapter extends PinnedListAdapter {
     }
 
 
-    @Override
-    public int getViewTypeCount() {
-        return COUNT;
-    }
+    private class NoticeHolder extends RecyclerView.ViewHolder {
 
-    private class NoticeHolder extends AbsViewHolder {
-
-        private final View itemView;
         private final VerticalScrollTextView pinName;
 
 
-        public NoticeHolder(int viewType, Context context) {
-            super(viewType);
-            itemView = View.inflate(context, R.layout.item_topic_pin, null);
+        public NoticeHolder(View itemView) {
+            super(itemView);
             pinName = VF.f(itemView, R.id.pinName);
         }
 
-        @Override
-        protected View getItemView() {
-            return itemView;
-        }
     }
 
-    private class AddHolder extends AbsViewHolder {
+    private class AddHolder extends RecyclerView.ViewHolder {
 
-        private final View itemView;
         private final Banner banner;
 
 
-        public AddHolder(int viewType, Context context) {
-            super(viewType);
-            itemView = View.inflate(context, R.layout.list_item_banner, null);
+        public AddHolder(View itemView) {
+            super(itemView);
             banner = VF.f(itemView, R.id.banner);
         }
 
-        @Override
-        protected View getItemView() {
-            return itemView;
-        }
+
     }
 
-    private class ItemHolder extends AbsViewHolder {
+    private class ItemHolder extends RecyclerView.ViewHolder {
 
-        private final View itemView;
+
         private final TextView topicTitleTextView;
         private final TextView authorNameTextView;
         private final TextView updateTimeTextView;
 
-        public ItemHolder(int viewType, Context context) {
-            super(viewType);
-            itemView = View.inflate(context, R.layout.item_topic, null);
+        public ItemHolder(View itemView) {
+            super(itemView);
+
             topicTitleTextView = VF.f(itemView, R.id.topicTitleTextView);
             authorNameTextView = VF.f(itemView, R.id.authorNameTextView);
             updateTimeTextView = VF.f(itemView, R.id.updateTimeTextView);
         }
 
-        @Override
-        protected View getItemView() {
-            return itemView;
-        }
     }
 }

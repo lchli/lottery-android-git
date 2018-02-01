@@ -7,6 +7,7 @@ import android.widget.EditText;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.lch.lottery.R;
+import com.lch.lottery.common.CommonTitleView;
 import com.lch.lottery.common.TabPage;
 import com.lch.lottery.user.controller.UserController;
 import com.lch.lottery.user.model.UserResponse;
@@ -22,10 +23,10 @@ public class LoginPage extends TabPage {
 
     private UserController userController = new UserController();
     private UserPage userPage;
-    private View gotoRegisterBT;
     private View loginBT;
     private EditText userAccountET;
     private EditText userPwdET;
+    private CommonTitleView common_title;
 
     public LoginPage(@NonNull Context context, UserPage userPage) {
         super(context);
@@ -35,17 +36,21 @@ public class LoginPage extends TabPage {
 
 
     protected void init() {
-        View.inflate(getContext(), R.layout.page_login, this);
-        gotoRegisterBT = VF.f(this, R.id.gotoRegisterBT);
-        loginBT = VF.f(this, R.id.loginBT);
-        userAccountET = VF.f(this, R.id.userAccountET);
-        userPwdET = VF.f(this, R.id.userPwdET);
-        gotoRegisterBT.setOnClickListener(new OnClickListener() {
+        View.inflate(getContext(), R.layout.fragment_login, this);
+        loginBT = VF.f(this, R.id.login_widget);
+        userAccountET = VF.f(this, R.id.user_account_edit);
+        userPwdET = VF.f(this, R.id.user_pwd_edit);
+        common_title = VF.f(this, R.id.common_title);
+
+        common_title.setCenterText(getResources().getString(R.string.login), null);
+        common_title.addRightText(getResources().getString(R.string.goto_register), new OnClickListener() {
             @Override
             public void onClick(View v) {
                 userPage.gotoRegister();
             }
         });
+
+
         loginBT.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
