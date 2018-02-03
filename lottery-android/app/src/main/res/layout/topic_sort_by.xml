@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:padding="10dp"
-        android:text="按时间降序" />
+        android:text="按时间降序排列" />
 
     <TextView
         android:id="@+id/tvTimeAsc"
@@ -20,6 +20,6 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:padding="10dp"
-        android:text="按时间升序" />
+        android:text="按时间升序排列" />
 
 </LinearLayout>

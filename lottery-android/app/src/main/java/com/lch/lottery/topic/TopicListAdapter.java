@@ -1,7 +1,6 @@
 package com.lch.lottery.topic;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -13,7 +12,7 @@ import com.lch.lottery.common.VerticalScrollTextView;
 import com.lch.lottery.topic.model.AdResponse;
 import com.lch.lottery.topic.model.NoticeResponse;
 import com.lch.lottery.topic.model.TopicResponse;
-import com.lch.netkit.common.base.BaseRecyclerAdapter;
+import com.lch.netkit.common.base.AbsAdapter;
 import com.lch.netkit.common.tool.VF;
 import com.lch.netkit.imageloader.LiImageLoader;
 import com.youth.banner.Banner;
@@ -26,7 +25,7 @@ import java.util.List;
  * Created by bbt-team on 2017/12/15.
  */
 
-public class TopicListAdapter extends BaseRecyclerAdapter<Object> {
+public class TopicListAdapter extends AbsAdapter<Object> {
 
     private static final int TYPE_ITEM = 0;
     private static final int TYPE_ADD = 1;
@@ -35,7 +34,7 @@ public class TopicListAdapter extends BaseRecyclerAdapter<Object> {
 
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public AbsAdapter.AbsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         View itemView;
 
@@ -44,22 +43,22 @@ public class TopicListAdapter extends BaseRecyclerAdapter<Object> {
             case TYPE_ITEM:
                 itemView = View.inflate(parent.getContext(), R.layout.item_topic, null);
 
-                return new ItemHolder(itemView);
+                return new ItemHolder(itemView, viewType);
 
             case TYPE_NOTICE:
                 itemView = View.inflate(parent.getContext(), R.layout.item_topic_pin, null);
-                return new NoticeHolder(itemView);
+                return new NoticeHolder(itemView, viewType);
 
             case TYPE_ADD:
                 itemView = View.inflate(parent.getContext(), R.layout.list_item_banner, null);
-                return new AddHolder(itemView);
+                return new AddHolder(itemView, viewType);
 
         }
         return null;
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(AbsAdapter.AbsViewHolder holder, int position) {
         int viewType = getItemViewType(position);
 
         switch (viewType) {
@@ -67,7 +66,8 @@ public class TopicListAdapter extends BaseRecyclerAdapter<Object> {
             case TYPE_ITEM: {
                 final TopicResponse.Topic data = (TopicResponse.Topic) getItem(position);
                 ItemHolder vh = (ItemHolder) holder;
-                vh.topicTitleTextView.setText(data.title);
+                String title = String.format("(%s)%s", data.tag, data.title);
+                vh.topicTitleTextView.setText(title);
                 vh.authorNameTextView.setText(data.userName);
                 vh.updateTimeTextView.setText(TimeUtils.millis2String(data.updateTime));
                 vh.itemView.setOnClickListener(new View.OnClickListener() {
@@ -137,46 +137,68 @@ public class TopicListAdapter extends BaseRecyclerAdapter<Object> {
 
     }
 
+    @Override
+    public int getViewTypeCount() {
+        return COUNT;
+    }
 
-    private class NoticeHolder extends RecyclerView.ViewHolder {
+    private class NoticeHolder extends AbsAdapter.AbsViewHolder {
 
         private final VerticalScrollTextView pinName;
+        private View itemView;
 
 
-        public NoticeHolder(View itemView) {
-            super(itemView);
+        public NoticeHolder(View itemView, int viewtype) {
+            super(viewtype);
+            this.itemView = itemView;
             pinName = VF.f(itemView, R.id.pinName);
         }
 
+        @Override
+        protected View getItemView() {
+            return itemView;
+        }
     }
 
-    private class AddHolder extends RecyclerView.ViewHolder {
+    private class AddHolder extends AbsAdapter.AbsViewHolder {
 
         private final Banner banner;
+        private View itemView;
 
 
-        public AddHolder(View itemView) {
-            super(itemView);
+        public AddHolder(View itemView, int viewtype) {
+            super(viewtype);
+            this.itemView = itemView;
             banner = VF.f(itemView, R.id.banner);
+
         }
 
-
+        @Override
+        protected View getItemView() {
+            return itemView;
+        }
     }
 
-    private class ItemHolder extends RecyclerView.ViewHolder {
+    private class ItemHolder extends AbsAdapter.AbsViewHolder {
 
 
         private final TextView topicTitleTextView;
         private final TextView authorNameTextView;
         private final TextView updateTimeTextView;
+        private View itemView;
 
-        public ItemHolder(View itemView) {
-            super(itemView);
+        public ItemHolder(View itemView, int viewtype) {
+            super(viewtype);
+            this.itemView = itemView;
 
             topicTitleTextView = VF.f(itemView, R.id.topicTitleTextView);
             authorNameTextView = VF.f(itemView, R.id.authorNameTextView);
             updateTimeTextView = VF.f(itemView, R.id.updateTimeTextView);
         }
 
+        @Override
+        protected View getItemView() {
+            return itemView;
+        }
     }
 }

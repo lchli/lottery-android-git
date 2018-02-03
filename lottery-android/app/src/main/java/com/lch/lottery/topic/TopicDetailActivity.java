@@ -25,7 +25,6 @@ public class TopicDetailActivity extends BaseCompatActivity {
     private TextView exitWriteTV;
     private TextView saveWriteTV;
     private TextView topicTitleEt;
-    private TextView topicTagEt;
     private TextView topicContentEt;
     private TopicResponse.Topic topic;
 
@@ -46,13 +45,11 @@ public class TopicDetailActivity extends BaseCompatActivity {
         exitWriteTV = f(R.id.exitWriteTV);
         saveWriteTV = f(R.id.saveWriteTV);
         topicTitleEt = f(R.id.topicTitleEt);
-        topicTagEt = f(R.id.topicTagEt);
         topicContentEt = f(R.id.topicContentEt);
 
         if (topic != null) {
-            topicTitleEt.setText("标题：" + topic.title);
-            topicTagEt.setText("标签：" + topic.tagText());
-            topicContentEt.setText("内容：\n" + topic.content);
+            topicTitleEt.setText(topic.title);
+            topicContentEt.setText(topic.content);
         }
 
         exitWriteTV.setOnClickListener(new View.OnClickListener() {

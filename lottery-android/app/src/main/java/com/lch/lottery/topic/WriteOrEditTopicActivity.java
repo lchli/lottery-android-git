@@ -6,18 +6,21 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.lch.lottery.App;
 import com.lch.lottery.R;
+import com.lch.lottery.common.BottomSheetDialog;
 import com.lch.lottery.eventbus.TopicListDataChangedEvent;
 import com.lch.lottery.topic.controller.TopicController;
 import com.lch.lottery.topic.model.TopicResponse;
 import com.lch.lottery.util.DialogUtil;
 import com.lch.lottery.util.EventBusUtils;
 import com.lch.netkit.common.base.BaseCompatActivity;
+import com.lch.netkit.common.tool.VF;
 
 /**
  * Created by lichenghang on 2017/12/16.
@@ -31,7 +34,7 @@ public class WriteOrEditTopicActivity extends BaseCompatActivity {
     private TextView exitWriteTV;
     private TextView saveWriteTV;
     private EditText topicTitleEt;
-    private EditText topicTagEt;
+    private TextView topicTagEt;
     private EditText topicContentEt;
     private TopicResponse.Topic topic;
     private Dialog loadingDialog;
@@ -60,6 +63,12 @@ public class WriteOrEditTopicActivity extends BaseCompatActivity {
             topicTagEt.setText(topic.tag);
             topicContentEt.setText(topic.content);
         }
+        topicTagEt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showTagDialog();
+            }
+        });
 
         exitWriteTV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,32 +92,95 @@ public class WriteOrEditTopicActivity extends BaseCompatActivity {
                 topic.content = content;
 
                 loadingDialog = DialogUtil.showLoadingDialog(WriteOrEditTopicActivity.this);
-                presenter.addOrUpdateTopic(topic);
+                presenter.addOrUpdateTopic(topic, new TopicController.C() {
+                    @Override
+                    public void onSuccess() {
+                        EventBusUtils.post(new TopicListDataChangedEvent());
+
+                        if (loadingDialog != null) {
+                            loadingDialog.dismiss();
+                        }
+                        ToastUtils.showShort("发布成功");
+                        finish();
+                    }
+
+                    @Override
+                    public void onFail(String msg) {
+                        if (loadingDialog != null) {
+                            loadingDialog.dismiss();
+                        }
+                        ToastUtils.showShort(msg);
+                    }
+                });
 
             }
         });
 
-        presenter.setCallback(new TopicController.Callback() {
+
+    }
+
+    private void showTagDialog() {
+        final BottomSheetDialog mDialog = new BottomSheetDialog(this);
+        View root = View.inflate(this, R.layout.choose_topic_tag_dialog, null);
+        final TextView tvDanma = VF.f(root, R.id.tvDanma);
+        final TextView tvShama = VF.f(root, R.id.tvShama);
+        final TextView tvHewei = VF.f(root, R.id.tvHewei);
+        final TextView tvKuadu = VF.f(root, R.id.tvKuadu);
+        final TextView tvErma = VF.f(root, R.id.tvErma);
+        final TextView tvDadi = VF.f(root, R.id.tvDadi);
+
+        tvDanma.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onFail(String msg) {
-                if (loadingDialog != null) {
-                    loadingDialog.dismiss();
-                }
-                ToastUtils.showShort(msg);
+            public void onClick(View v) {
+                topicTagEt.setText(((TextView) v).getText());
 
-            }
-
-            @Override
-            public void onSuccess() {
-                EventBusUtils.post(new TopicListDataChangedEvent());
-
-                if (loadingDialog != null) {
-                    loadingDialog.dismiss();
-                }
-                ToastUtils.showShort("发布成功");
-                finish();
+                mDialog.dismiss();
             }
         });
+        tvShama.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                topicTagEt.setText(((TextView) v).getText());
+                mDialog.dismiss();
+            }
+        });
+        tvHewei.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                topicTagEt.setText(((TextView) v).getText());
+                mDialog.dismiss();
+            }
+        });
+
+        tvKuadu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                topicTagEt.setText(((TextView) v).getText());
+                mDialog.dismiss();
+            }
+        });
+
+        tvErma.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                topicTagEt.setText(((TextView) v).getText());
+                mDialog.dismiss();
+            }
+        });
+        tvDadi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                topicTagEt.setText(((TextView) v).getText());
+                mDialog.dismiss();
+            }
+        });
+
+        mDialog.contentView(root)
+                .heightParam(ViewGroup.LayoutParams.WRAP_CONTENT)
+                .inDuration(200)
+                .outDuration(200)
+                .cancelable(true)
+                .show();
     }
 
 
@@ -117,7 +189,6 @@ public class WriteOrEditTopicActivity extends BaseCompatActivity {
         if (loadingDialog != null) {
             loadingDialog.dismiss();
         }
-        presenter.setCallback(null);
         super.onDestroy();
     }
 

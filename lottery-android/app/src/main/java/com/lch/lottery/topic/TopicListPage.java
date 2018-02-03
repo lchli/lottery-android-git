@@ -6,20 +6,17 @@ import android.os.Bundle;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.EmptyUtils;
 import com.blankj.utilcode.util.ToastUtils;
-import com.github.jdsjlzx.interfaces.OnLoadMoreListener;
-import com.github.jdsjlzx.interfaces.OnRefreshListener;
-import com.github.jdsjlzx.recyclerview.LRecyclerView;
-import com.github.jdsjlzx.recyclerview.LRecyclerViewAdapter;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.lch.lottery.R;
 import com.lch.lottery.common.BottomSheetDialog;
 import com.lch.lottery.common.TabPage;
@@ -33,6 +30,7 @@ import com.lch.netkit.common.tool.VF;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 /**
@@ -43,7 +41,7 @@ public class TopicListPage extends TabPage {
 
 
     private final TopicController mPresenter = new TopicController();
-    private LRecyclerView topicListView;
+    private PullToRefreshListView topicListView;
     private TopicListAdapter mTopicListAdapter;
     private View createTopicFab;
     private View emptyView;
@@ -83,6 +81,7 @@ public class TopicListPage extends TabPage {
         tvStartSearch = VF.f(this, R.id.tvStartSearch);
         tvSorter = VF.f(this, R.id.tvSorter);
 
+        topicListView.setMode(PullToRefreshBase.Mode.BOTH);
         tvSearchBy.setText(searchType.toString());
         tvSorter.setText(sorter.toString());
 
@@ -95,7 +94,7 @@ public class TopicListPage extends TabPage {
         tvStartSearch.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadTopics(true);
+                topicListView.setRefreshing();
             }
         });
         tvSorter.setOnClickListener(new OnClickListener() {
@@ -107,25 +106,22 @@ public class TopicListPage extends TabPage {
 
         mTopicListAdapter = new TopicListAdapter();
 
-        topicListView.setLayoutManager(new LinearLayoutManager(getContext()));
-        topicListView.setAdapter(new LRecyclerViewAdapter(mTopicListAdapter));
+        topicListView.setAdapter(mTopicListAdapter);
         createTopicFab.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 WriteOrEditTopicActivity.launch(null, getContext());
             }
         });
-
-        topicListView.setOnLoadMoreListener(new OnLoadMoreListener() {
+        topicListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
             @Override
-            public void onLoadMore() {
-                loadMore();
+            public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+                loadTopics();
             }
-        });
-        topicListView.setOnRefreshListener(new OnRefreshListener() {
+
             @Override
-            public void onRefresh() {
-                loadTopics(false);
+            public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+                loadMore();
             }
         });
 
@@ -195,59 +191,62 @@ public class TopicListPage extends TabPage {
                 .show();
     }
 
+    private void onGetTopics(List<Object> data) {
+        topicListView.onRefreshComplete();
+
+        mTopicListAdapter.refresh(data);
+
+        if (EmptyUtils.isEmpty(data)) {
+            emptyView.setVisibility(VISIBLE);
+        } else {
+            emptyView.setVisibility(GONE);
+        }
+    }
+
+    private void onFail(String msg) {
+        topicListView.onRefreshComplete();
+        ToastUtils.showLong(msg);
+    }
+
+    private void onNoMore() {
+        topicListView.onRefreshComplete();
+    }
+
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-        mPresenter.setCallback(new TopicController.Callback() {
-            @Override
-            public void onGet(List<Object> data) {
 
-                topicListView.on(false);
-                mTopicListAdapter.refresh(data);
-
-                if (EmptyUtils.isEmpty(data)) {
-                    emptyView.setVisibility(VISIBLE);
-                } else {
-                    emptyView.setVisibility(GONE);
-                }
-            }
-
-            @Override
-            public void onFail(String msg) {
-                swipeRefreshLayout.setRefreshing(false);
-                ToastUtils.showLong(msg);
-            }
-
-        });
         EventBusUtils.register(this);
 
-        loadTopics(true);
+        topicListView.setRefreshing();
+        loadTopics();
     }
 
     @Override
     public void onActivityDestroyed(Activity activity) {
-        mPresenter.setCallback(null);
         EventBusUtils.unregister(this);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(TopicListDataChangedEvent event) {
-        loadTopics(true);
+        topicListView.setRefreshing();
     }
 
 
-    private void loadTopics(boolean setRefreshing) {
+    private void loadTopics() {
         emptyView.setVisibility(GONE);
-        swipeRefreshLayout.setRefreshing(setRefreshing);
 
         switch (searchType) {
             case TITLE:
-                mPresenter.getTopics(sorter.sortField(), sorter.sortDirec(), null, etSearchKey.getText().toString(), null, null);
+                mPresenter.getTopics(sorter.sortField(), sorter.sortDirec(), null, etSearchKey.getText().toString(),
+                        null, null, new Qcb(this));
                 break;
             case TAG:
-                mPresenter.getTopics(sorter.sortField(), sorter.sortDirec(), etSearchKey.getText().toString(), null, null, null);
+                mPresenter.getTopics(sorter.sortField(), sorter.sortDirec(), etSearchKey.getText().toString(),
+                        null, null, null, new Qcb(this));
                 break;
             case ALL:
-                mPresenter.getTopics(sorter.sortField(), sorter.sortDirec(), null, null, null, null);
+                mPresenter.getTopics(sorter.sortField(), sorter.sortDirec(), null, null,
+                        null, null, new Qcb(this));
                 break;
         }
 
@@ -257,15 +256,56 @@ public class TopicListPage extends TabPage {
     private void loadMore() {
         switch (searchType) {
             case TITLE:
-                mPresenter.loadMore(sorter.sortField(), sorter.sortDirec(), null, etSearchKey.getText().toString(), null, null);
+                mPresenter.loadMore(sorter.sortField(), sorter.sortDirec(), null,
+                        etSearchKey.getText().toString(), null, null, new Qcb(this));
                 break;
             case TAG:
-                mPresenter.loadMore(sorter.sortField(), sorter.sortDirec(), etSearchKey.getText().toString(), null, null, null);
+                mPresenter.loadMore(sorter.sortField(), sorter.sortDirec(), etSearchKey.getText().toString(),
+                        null, null, null, new Qcb(this));
                 break;
             case ALL:
-                mPresenter.loadMore(sorter.sortField(), sorter.sortDirec(), null, null, null, null);
+                mPresenter.loadMore(sorter.sortField(), sorter.sortDirec(), null, null,
+                        null, null, new Qcb(this));
                 break;
         }
     }
 
+
+    private static class Qcb implements TopicController.Q {
+
+        private WeakReference<TopicListPage> ref;
+
+        private Qcb(TopicListPage ui) {
+            ref = new WeakReference<>(ui);
+        }
+
+        @Override
+        public void onGet(List<Object> data) {
+            TopicListPage ui = ref.get();
+            if (ui == null) {
+                return;
+            }
+            ui.onGetTopics(data);
+
+        }
+
+        @Override
+        public void onFail(String msg) {
+            TopicListPage ui = ref.get();
+            if (ui == null) {
+                return;
+            }
+            ui.onFail(msg);
+        }
+
+        @Override
+        public void onNoMore() {
+            TopicListPage ui = ref.get();
+            if (ui == null) {
+                return;
+            }
+            ui.onNoMore();
+
+        }
+    }
 }

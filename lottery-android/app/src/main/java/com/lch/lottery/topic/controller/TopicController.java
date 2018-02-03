@@ -25,59 +25,66 @@ import java.util.List;
 
 public class TopicController {
 
-    public static abstract class Callback {
-        public void onGet(List<Object> data) {
-        }
+    public interface Q {
+        void onGet(List<Object> data);
 
-        public void onFail(String msg) {
-        }
 
-        public void onSuccess() {
-        }
+        void onFail(String msg);
+
+        void onNoMore();
     }
+
+    public interface C {
+        void onSuccess();
+
+        void onFail(String msg);
+
+    }
+
 
     private TopicRepo topicRepo = DI.injectTopicRepo();
     private UserRepo localUserRepo = DI.injectLocalUserRepo();
     private AdRepo adRepo = DI.injectAdRepo();
     private NoticeRepo noticeRepo = DI.injectNoticeRepo();
 
-    private Callback callback;
     private int page = 0;
     private static final int PAGE_SIZE = 50;
     private List<TopicResponse.Topic> totalTopics = new ArrayList<>();
     private boolean isHaveMore = true;
 
 
-    public void setCallback(Callback callback) {
-        this.callback = callback;
-    }
+    public void getMyTopics(final Q callback) {
 
-
-    public void getMyTopics() {
         ResponseValue<UserResponse.User> res = localUserRepo.getCurrentUser();
+
         if (res.data == null) {
-            onFail("未登录");
+            NetKit.runInUI(new Runnable() {
+                @Override
+                public void run() {
+                    callback.onFail("未登录");
+                }
+            });
             return;
         }
 
-        getTopics(null, null, null, null, null, res.data.userId);
+        getTopics(null, null, null, null, null, res.data.userId, callback);
     }
 
     public void getTopics(final String sort, final String sortDirect,
                           final String tag, final String title,
-                          final String topicId, final String userId) {
+                          final String topicId, final String userId, Q callback) {
 
         page = 0;
         isHaveMore = true;
         totalTopics.clear();
 
-        getTopicsImpl(sort, sortDirect, tag, title, topicId, userId);
+        getTopicsImpl(sort, sortDirect, tag, title, topicId, userId, callback);
     }
 
 
     private void getTopicsImpl(final String sort, final String sortDirect,
                                final String tag, final String title,
-                               final String topicId, final String userId) {
+                               final String topicId, final String userId, @NonNull final Q callback) {
 
         NetKit.runAsync(new Runnable() {
             @Override
@@ -87,17 +94,32 @@ public class TopicController {
                 final ResponseValue<List<TopicResponse.Topic>> topicRes = topicRepo.getTopics(sort, sortDirect, tag,
                         title, topicId, userId, page, PAGE_SIZE);
                 if (topicRes.err != null) {
-                    onFail(topicRes.err.msg);
+                    NetKit.runInUI(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onFail(topicRes.err.msg);
+                        }
+                    });
                 }
 
-                ResponseValue<AdResponse> adRes = adRepo.getAd();
+                final ResponseValue<AdResponse> adRes = adRepo.getAd();
                 if (adRes.err != null) {
-                    onFail(adRes.err.msg);
+                    NetKit.runInUI(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onFail(adRes.err.msg);
+                        }
+                    });
                 }
 
-                ResponseValue<NoticeResponse> noticeRes = noticeRepo.getNotice();
+                final ResponseValue<NoticeResponse> noticeRes = noticeRepo.getNotice();
                 if (noticeRes.err != null) {
-                    onFail(noticeRes.err.msg);
+                    NetKit.runInUI(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onFail(noticeRes.err.msg);
+                        }
+                    });
                 }
 //
 
@@ -126,9 +148,7 @@ public class TopicController {
                 NetKit.runInUI(new Runnable() {
                     @Override
                     public void run() {
-                        if (callback != null) {
-                            callback.onGet(datas);
-                        }
+                        callback.onGet(datas);
                     }
                 });
 
@@ -141,71 +161,70 @@ public class TopicController {
 
     public void loadMore(final String sort, final String sortDirect,
                          final String tag, final String title,
-                         final String topicId, final String userId) {
+                         final String topicId, final String userId, @NonNull final Q callback) {
         if (!isHaveMore) {
+            NetKit.runInUI(new Runnable() {
+                @Override
+                public void run() {
+                    callback.onNoMore();
+                }
+            });
             return;
         }
 
-        getTopicsImpl(sort, sortDirect, tag, title, topicId, userId);
+        getTopicsImpl(sort, sortDirect, tag, title, topicId, userId, callback);
     }
 
 
-    public void addOrUpdateTopic(@NonNull final TopicResponse.Topic topic) {
+    public void addOrUpdateTopic(@NonNull final TopicResponse.Topic topic, @NonNull final C callback) {
 
         NetKit.runAsync(new Runnable() {
             @Override
             public void run() {
                 if (TextUtils.isEmpty(topic.title)) {
-                    onFail("标题不能为空");
+                    NetKit.runInUI(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onFail("标题不能为空");
+                        }
+                    });
                     return;
                 }
 
                 if (TextUtils.isEmpty(topic.content)) {
-                    onFail("内容不能为空");
+                    NetKit.runInUI(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onFail("内容不能为空");
+                        }
+                    });
                     return;
                 }
 
                 final ResponseValue res = topicRepo.addOrUpdateTopic(topic);
-                if (res == null) {
-                    onFail("res is null");
-                    return;
-                }
 
                 if (res.err != null) {
-                    onFail(res.err.msg);
+                    NetKit.runInUI(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onFail(res.err.msg);
+                        }
+                    });
                     return;
 
                 }
 
-                onSuccess();
+                NetKit.runInUI(new Runnable() {
+                    @Override
+                    public void run() {
+                        callback.onSuccess();
+                    }
+                });
             }
         });
 
 
     }
 
-
-    private void onFail(final String msg) {
-
-        NetKit.runInUI(new Runnable() {
-            @Override
-            public void run() {
-                if (callback != null) {
-                    callback.onFail(msg);
-                }
-            }
-        });
-    }
-
-    private void onSuccess() {
-        NetKit.runInUI(new Runnable() {
-            @Override
-            public void run() {
-                if (callback != null) {
-                    callback.onSuccess();
-                }
-            }
-        });
-    }
 
 }
