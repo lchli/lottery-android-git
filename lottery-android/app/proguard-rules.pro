@@ -33,3 +33,7 @@
 -keep class com.youth.banner.** {
     *;
  }
+
+ -keep class com.baidu.** {*;}
+ -keep class vi.com.** {*;}
+ -dontwarn com.baidu.**

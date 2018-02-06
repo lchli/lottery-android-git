@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Intent;
 
+import com.baidu.mapapi.SDKInitializer;
 import com.blankj.utilcode.util.Utils;
 import com.lch.netkit.NetKit;
 import com.lch.netkit.imageloader.LiImageLoader;
@@ -27,6 +28,7 @@ public class App extends Application {
         Utils.init(this);
         NetKit.init();
         LiImageLoader.instance().init(LiImageLoader.newSetting(this));
+        SDKInitializer.initialize(this);
     }
 
     public static void launchIt(Intent it) {

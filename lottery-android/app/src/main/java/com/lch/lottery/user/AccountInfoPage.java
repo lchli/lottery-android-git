@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.ToastUtils;
+import com.lch.lottery.App;
 import com.lch.lottery.R;
 import com.lch.lottery.common.TabPage;
 import com.lch.lottery.user.controller.UserController;
@@ -38,8 +39,9 @@ public class AccountInfoPage extends TabPage {
         View.inflate(getContext(), R.layout.page_account_info, this);
         user_nick = VF.f(this, R.id.user_nick);
         user_portrait = VF.f(this, R.id.user_portrait);
-
+        View lottery_place_widget = VF.f(this, R.id.lottery_place_widget);
         View logout_widget = VF.f(this, R.id.logout_widget);
+
         logout_widget.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,6 +58,12 @@ public class AccountInfoPage extends TabPage {
                     }
                 });
 
+            }
+        });
+        lottery_place_widget.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                App.launchActivity(MapPoiActivity.class);
             }
         });
 
