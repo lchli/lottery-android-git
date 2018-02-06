@@ -11,6 +11,7 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.lch.lottery.App;
 import com.lch.lottery.R;
 import com.lch.lottery.common.TabPage;
+import com.lch.lottery.map.PoiSearchActivity;
 import com.lch.lottery.user.controller.UserController;
 import com.lch.lottery.user.model.UserResponse;
 import com.lch.netkit.common.tool.VF;
@@ -60,12 +61,14 @@ public class AccountInfoPage extends TabPage {
 
             }
         });
+
         lottery_place_widget.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                App.launchActivity(MapPoiActivity.class);
+                App.launchActivity(PoiSearchActivity.class);
             }
         });
+
 
         LiImageLoader.instance().builder()
                 .source("https://www.baidu.com/img/bd_logo1.png")

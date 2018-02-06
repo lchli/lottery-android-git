@@ -6,11 +6,9 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 
-import com.lch.lottery.App;
 import com.lch.lottery.R;
 import com.lch.lottery.common.TabPage;
 import com.lch.lottery.filter.FilterPage;
-import com.lch.lottery.map.PoiSearchActivity;
 import com.lch.lottery.topic.TopicListPage;
 import com.lch.lottery.user.UserPage;
 import com.lch.netkit.common.base.BaseCompatActivity;
@@ -87,7 +85,6 @@ public class HomeActivity extends BaseCompatActivity {
         }
 
 
-        App.launchActivity(PoiSearchActivity.class);
     }
 
 
