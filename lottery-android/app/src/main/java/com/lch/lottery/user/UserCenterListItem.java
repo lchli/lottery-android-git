@@ -49,11 +49,19 @@ public class UserCenterListItem extends FrameLayout {
             Drawable icon = a.getDrawable(R.styleable.UserCenterListItem_UserCenterListItem_icon);
             a.recycle();
             if (text != null) {
-                text_widget.setText(text);
+                setText(text);
             }
             if (icon != null) {
-                icon_widget.setImageDrawable(icon);
+                setImageDrawable(icon);
             }
         }
+    }
+
+    public void setText(CharSequence text) {
+        text_widget.setText(text);
+    }
+
+    public void setImageDrawable(Drawable icon) {
+        icon_widget.setImageDrawable(icon);
     }
 }

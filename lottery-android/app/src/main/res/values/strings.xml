@@ -38,5 +38,6 @@
     <string name="post_list">帖子列表</string>
     <string name="post_filter">筛选</string>
     <string name="activity_userInfo">用户信息</string>
+    <string name="app_version_info">版本号：%1$s</string>
 
 </resources>

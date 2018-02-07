@@ -8,6 +8,9 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.bai.mapapi.overlayutil.PoiOverlay;
+import com.baidu.location.BDAbstractLocationListener;
+import com.baidu.location.BDLocation;
+import com.baidu.location.LocationClient;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
@@ -29,6 +32,7 @@ import com.baidu.mapapi.search.poi.PoiResult;
 import com.baidu.mapapi.search.poi.PoiSearch;
 import com.baidu.mapapi.search.poi.PoiSortType;
 import com.lch.lottery.R;
+import com.lch.lottery.util.MapUtils;
 
 
 /**
@@ -48,6 +52,8 @@ public class PoiSearchActivity extends FragmentActivity implements
 
     private static final int RADIUS = 5000;
     private static final int PAGE_SIZE = 50;
+    private LocationClient mLocationClient;
+    private BDLocation mBDLocation;
 
 
     @Override
@@ -59,7 +65,16 @@ public class PoiSearchActivity extends FragmentActivity implements
         mBaiduMap = ((SupportMapFragment) (getSupportFragmentManager()
                 .findFragmentById(R.id.map))).getBaiduMap();
 
-        searchNearbyProcess();
+        mLocationClient = new LocationClient(getApplicationContext());
+        mLocationClient.registerLocationListener(new BDAbstractLocationListener() {
+            @Override
+            public void onReceiveLocation(BDLocation bdLocation) {
+                mBDLocation = bdLocation;
+                searchNearbyProcess();
+            }
+        });
+
+        mLocationClient.start();
     }
 
     @Override
@@ -75,6 +90,7 @@ public class PoiSearchActivity extends FragmentActivity implements
     @Override
     protected void onDestroy() {
         mPoiSearch.destroy();
+        mLocationClient.stop();
         super.onDestroy();
     }
 
@@ -90,7 +106,12 @@ public class PoiSearchActivity extends FragmentActivity implements
 
 
     public void searchNearbyProcess() {
-        PoiNearbySearchOption nearbySearchOption = new PoiNearbySearchOption().keyword("彩票").sortType(PoiSortType.distance_from_near_to_far).location(center)
+        if (mBDLocation == null) {
+            Toast.makeText(PoiSearchActivity.this, "定位失败！请重试", Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
+        PoiNearbySearchOption nearbySearchOption = new PoiNearbySearchOption().keyword("彩票").sortType(PoiSortType.distance_from_near_to_far).location(new LatLng(mBDLocation.getLatitude(), mBDLocation.getLongitude()))
                 .radius(RADIUS).pageNum(loadIndex).pageCapacity(PAGE_SIZE);
         mPoiSearch.searchNearby(nearbySearchOption);
     }
@@ -142,7 +163,7 @@ public class PoiSearchActivity extends FragmentActivity implements
      *
      * @param result
      */
-    public void onGetPoiDetailResult(PoiDetailResult result) {
+    public void onGetPoiDetailResult(final PoiDetailResult result) {
         if (result.error != SearchResult.ERRORNO.NO_ERROR) {
             Toast.makeText(PoiSearchActivity.this, "抱歉，未找到结果", Toast.LENGTH_SHORT)
                     .show();
@@ -153,8 +174,16 @@ public class PoiSearchActivity extends FragmentActivity implements
                     .setPositiveButton("开始导航", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            Toast.makeText(PoiSearchActivity.this, "开始导航成功", Toast.LENGTH_SHORT)
-                                    .show();
+                            if (mBDLocation == null) {
+                                Toast.makeText(PoiSearchActivity.this, "定位失败！请重试", Toast.LENGTH_LONG)
+                                        .show();
+                                return;
+                            }
+                            MapUtils.NavPlace from = new MapUtils.NavPlace().name("当前位置").latLng(new LatLng(mBDLocation.getLatitude(), mBDLocation.getLongitude()));
+                            MapUtils.NavPlace to = new MapUtils.NavPlace().name(result.getName() + "-" + result.getAddress()).latLng(result.getLocation());
+
+                            MapUtils.baiduMapNavigate(from, to, getApplicationContext());
+
                         }
                     }).show();
 

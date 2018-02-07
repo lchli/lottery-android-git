@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.lch.lottery.App;
+import com.lch.lottery.BuildConfig;
 import com.lch.lottery.R;
 import com.lch.lottery.common.TabPage;
 import com.lch.lottery.map.PoiSearchActivity;
@@ -42,6 +43,8 @@ public class AccountInfoPage extends TabPage {
         user_portrait = VF.f(this, R.id.user_portrait);
         View lottery_place_widget = VF.f(this, R.id.lottery_place_widget);
         View logout_widget = VF.f(this, R.id.logout_widget);
+        UserCenterListItem about_app_widget = VF.f(this, R.id.about_app_widget);
+        about_app_widget.setText(getResources().getString(R.string.app_version_info, BuildConfig.VERSION_NAME));
 
         logout_widget.setOnClickListener(new OnClickListener() {
             @Override
