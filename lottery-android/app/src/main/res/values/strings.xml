@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">lottery-android</string>
+    <string name="app_name">行彩</string>
     <string name="title_topic">帖子</string>
     <string name="title_filter">缩水</string>
     <string name="title_user">用户</string>
