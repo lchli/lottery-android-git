@@ -14,10 +14,7 @@ import com.baidu.location.LocationClient;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
-import com.baidu.mapapi.map.CircleOptions;
 import com.baidu.mapapi.map.MarkerOptions;
-import com.baidu.mapapi.map.OverlayOptions;
-import com.baidu.mapapi.map.Stroke;
 import com.baidu.mapapi.map.SupportMapFragment;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.search.core.CityInfo;
@@ -47,8 +44,6 @@ public class PoiSearchActivity extends FragmentActivity implements
      * 搜索关键字输入窗口
      */
     private int loadIndex = 0;
-
-    private LatLng center = new LatLng(39.92235, 116.380338);
 
     private static final int RADIUS = 5000;
     private static final int PAGE_SIZE = 50;
@@ -140,7 +135,9 @@ public class PoiSearchActivity extends FragmentActivity implements
             overlay.addToMap();
             overlay.zoomToSpan();
 
-            showNearbyArea(center, RADIUS);
+            if (mBDLocation != null) {
+                showNearbyArea(new LatLng(mBDLocation.getLatitude(), mBDLocation.getLongitude()), RADIUS);
+            }
 
             return;
         }
@@ -182,7 +179,11 @@ public class PoiSearchActivity extends FragmentActivity implements
                             MapUtils.NavPlace from = new MapUtils.NavPlace().name("当前位置").latLng(new LatLng(mBDLocation.getLatitude(), mBDLocation.getLongitude()));
                             MapUtils.NavPlace to = new MapUtils.NavPlace().name(result.getName() + "-" + result.getAddress()).latLng(result.getLocation());
 
-                            MapUtils.baiduMapNavigate(from, to, getApplicationContext());
+                            boolean isSuccess = MapUtils.baiduMapNavigate(from, to, getApplicationContext());
+                            if (!isSuccess) {
+                                MapUtils.gaodeiMapNavigate(to, getApplicationContext());
+                            }
+
 
                         }
                     }).show();
@@ -226,10 +227,10 @@ public class PoiSearchActivity extends FragmentActivity implements
         MarkerOptions ooMarker = new MarkerOptions().position(center).icon(centerBitmap);
         mBaiduMap.addOverlay(ooMarker);
 
-        OverlayOptions ooCircle = new CircleOptions().fillColor(0xCCCCCC00)
-                .center(center).stroke(new Stroke(5, 0xFFFF00FF))
-                .radius(radius);
-        mBaiduMap.addOverlay(ooCircle);
+//        OverlayOptions ooCircle = new CircleOptions().fillColor(0xCCCCCC00)
+//                .center(center).stroke(new Stroke(5, 0xFFFF00FF))
+//                .radius(radius);
+//        mBaiduMap.addOverlay(ooCircle);
     }
 
 

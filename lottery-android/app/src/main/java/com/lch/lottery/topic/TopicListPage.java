@@ -172,6 +172,8 @@ public class TopicListPage extends TabPage {
                 sorter = TopicSorter.TIME_ASC;
                 tvSorter.setText(sorter.toString());
                 mDialog.dismiss();
+
+                topicListView.setRefreshing();
             }
         });
         tvTimeDesc.setOnClickListener(new OnClickListener() {
@@ -180,6 +182,8 @@ public class TopicListPage extends TabPage {
                 sorter = TopicSorter.TIME_DESC;
                 tvSorter.setText(sorter.toString());
                 mDialog.dismiss();
+
+                topicListView.setRefreshing();
             }
         });
 
