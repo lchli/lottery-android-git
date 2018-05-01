@@ -109,7 +109,7 @@ public class WriteOrEditTopicActivity extends BaseCompatActivity {
                         if (loadingDialog != null) {
                             loadingDialog.dismiss();
                         }
-                        ToastUtils.showShort(msg);
+                        ToastUtils.showShort("发布失败:"+msg);
                     }
                 });
 

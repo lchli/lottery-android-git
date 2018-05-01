@@ -27,7 +27,7 @@ public class NetTopicRepo implements TopicRepo {
     @Override
     public ResponseValue<List<TopicResponse.Topic>> getTopics(String sort, String sortDirect,
                                                               String tag, String title,
-                                                              String topicId, String userId,int page,int pageSize) {
+                                                              String topicId, String userId, int page, int pageSize) {
         StringRequestParams params = new StringRequestParams()
                 .addParam("sort", sort)
                 .addParam("sortDirect", sortDirect)
@@ -35,8 +35,8 @@ public class NetTopicRepo implements TopicRepo {
                 .addParam("title", title)
                 .addParam("topicId", topicId)
                 .addParam("userId", userId)
-                .addParam("page", page+"")
-                .addParam("pageSize", pageSize+"")
+                .addParam("page", page + "")
+                .addParam("pageSize", pageSize + "")
                 .setUrl(ApiUrl.TOPIC_GET);
 
         return NetKit.stringRequest().getSync(params, new Parser<List<TopicResponse.Topic>>() {
@@ -78,7 +78,7 @@ public class NetTopicRepo implements TopicRepo {
                 .addParam("tag", topic.tag);
 
 
-        return NetKit.stringRequest().postSync(params, new Parser<TopicResponse>() {
+        ResponseValue<TopicResponse> ret = NetKit.stringRequest().postSync(params, new Parser<TopicResponse>() {
             @Override
             public TopicResponse parse(String s) {
                 LogUtils.e(s);
@@ -96,6 +96,10 @@ public class NetTopicRepo implements TopicRepo {
 
             }
         });
+
+        LogUtils.e(ret);
+
+        return ret;
 
     }
 

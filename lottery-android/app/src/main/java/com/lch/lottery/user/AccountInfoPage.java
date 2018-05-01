@@ -41,6 +41,7 @@ public class AccountInfoPage extends TabPage {
         View.inflate(getContext(), R.layout.page_account_info, this);
         user_nick = VF.f(this, R.id.user_nick);
         user_portrait = VF.f(this, R.id.user_portrait);
+
         View lottery_place_widget = VF.f(this, R.id.lottery_place_widget);
         View logout_widget = VF.f(this, R.id.logout_widget);
         UserCenterListItem about_app_widget = VF.f(this, R.id.about_app_widget);
