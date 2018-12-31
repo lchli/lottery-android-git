@@ -8,6 +8,8 @@ import com.baidu.mapapi.SDKInitializer;
 import com.blankj.utilcode.util.Utils;
 import com.lch.netkit.NetKit;
 import com.lch.netkit.imageloader.LiImageLoader;
+import com.lchli.lottery.post.PostApiImpl;
+import com.lchli.lottery.postapi.PostApiManager;
 
 
 public class App extends Application {
@@ -29,6 +31,9 @@ public class App extends Application {
         NetKit.init();
         LiImageLoader.instance().init(LiImageLoader.newSetting(this));
         SDKInitializer.initialize(this);
+
+        PostApiManager.getINS().setPostApiImpl(new PostApiImpl());
+        PostApiManager.getINS().init();
     }
 
     public static void launchIt(Intent it) {
