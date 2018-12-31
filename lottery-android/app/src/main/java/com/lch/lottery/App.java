@@ -6,8 +6,8 @@ import android.content.Intent;
 
 import com.baidu.mapapi.SDKInitializer;
 import com.blankj.utilcode.util.Utils;
-import com.lch.netkit.NetKit;
-import com.lch.netkit.imageloader.LiImageLoader;
+import com.lch.netkit.v2.NetKit;
+import com.lchli.imgloader.ImgLoaderManager;
 import com.lchli.lottery.post.PostApiImpl;
 import com.lchli.lottery.postapi.PostApiManager;
 
@@ -28,8 +28,8 @@ public class App extends Application {
         super.onCreate();
 
         Utils.init(this);
-        NetKit.init();
-        LiImageLoader.instance().init(LiImageLoader.newSetting(this));
+        NetKit.init(this);
+        ImgLoaderManager.getINS().init(this,null);
         SDKInitializer.initialize(this);
 
         PostApiManager.getINS().setPostApiImpl(new PostApiImpl());
