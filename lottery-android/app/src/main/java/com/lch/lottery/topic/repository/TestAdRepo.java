@@ -1,5 +1,6 @@
 package com.lch.lottery.topic.repository;
 
+import com.lch.lottery.topic.datainterface.AdRepo;
 import com.lch.lottery.topic.model.AdResponse;
 import com.lch.netkit.string.ResponseValue;
 

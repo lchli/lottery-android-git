@@ -1,0 +1,38 @@
+package com.lch.lottery.topic.datainterface;
+
+import android.support.annotation.NonNull;
+
+import com.lch.lottery.topic.model.TopicResponse;
+import com.lchli.arch.clean.ResponseValue;
+
+import java.util.List;
+
+/**
+ * Created by lichenghang on 2018/1/28.
+ */
+
+public interface TopicRepo {
+
+    class QueryParam {
+
+        public String sort;
+        public String sortDirect;
+        public String tag;
+        public String title;
+        public String topicId;
+        public String userId;
+        public String page;
+        public String pageSize;
+    }
+
+
+    @NonNull
+    ResponseValue<List<TopicResponse.Topic>> getTopics(QueryParam param);
+
+    @NonNull
+    ResponseValue addTopic(TopicResponse.Topic topic);
+
+    @NonNull
+    ResponseValue updateTopic(TopicResponse.Topic topic);
+
+}

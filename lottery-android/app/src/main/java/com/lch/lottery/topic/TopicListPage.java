@@ -1,6 +1,7 @@
 package com.lch.lottery.topic;
 
 import android.app.Activity;
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.AttrRes;
@@ -22,10 +23,12 @@ import com.lch.lottery.common.BottomSheetDialog;
 import com.lch.lottery.common.TabPage;
 import com.lch.lottery.eventbus.TopicListDataChangedEvent;
 import com.lch.lottery.topic.controller.TopicController;
+import com.lch.lottery.topic.domain.SearchTopicCase;
 import com.lch.lottery.topic.model.SearchType;
 import com.lch.lottery.topic.model.TopicSorter;
+import com.lch.lottery.topic.vm.TopicListVm;
 import com.lch.lottery.util.EventBusUtils;
-import com.lch.netkit.common.tool.VF;
+import com.lchli.utils.tool.VF;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -52,6 +55,8 @@ public class TopicListPage extends TabPage {
 
     private SearchType searchType = SearchType.ALL;
     private TopicSorter sorter = TopicSorter.TIME_ASC;
+
+    private TopicListVm topicListVm = new TopicListVm();
 
 
     public TopicListPage(@NonNull Context context) {
@@ -125,6 +130,13 @@ public class TopicListPage extends TabPage {
             }
         });
 
+        topicListVm.topicListDataVm.observeForever(new Observer<List<Object>>() {
+            @Override
+            public void onChanged(@Nullable List<Object> objects) {
+                mTopicListAdapter.refresh(objects);
+            }
+        });
+
 
     }
 
@@ -137,16 +149,20 @@ public class TopicListPage extends TabPage {
         tvByTitle.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchType = SearchType.TITLE;
-                tvSearchBy.setText(searchType.toString());
+                //searchType = SearchType.TITLE;
+                //tvSearchBy.setText(searchType.toString());
+
+                topicListVm.setSearchBy(SearchType.TITLE);
                 mDialog.dismiss();
             }
         });
         tvByTag.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchType = SearchType.TAG;
-                tvSearchBy.setText(searchType.toString());
+//                searchType = SearchType.TAG;
+//                tvSearchBy.setText(searchType.toString());
+
+                topicListVm.setSearchBy(SearchType.TAG);
                 mDialog.dismiss();
             }
         });
@@ -169,18 +185,22 @@ public class TopicListPage extends TabPage {
         tvTimeAsc.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                sorter = TopicSorter.TIME_ASC;
-                tvSorter.setText(sorter.toString());
-                mDialog.dismiss();
+//                sorter = TopicSorter.TIME_ASC;
+//                tvSorter.setText(sorter.toString());
 
+                topicListVm.sort(SearchTopicCase.SortBy.TIME, SearchTopicCase.SortDirection.ASC);
+
+                mDialog.dismiss();
                 topicListView.setRefreshing();
             }
         });
         tvTimeDesc.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                sorter = TopicSorter.TIME_DESC;
-                tvSorter.setText(sorter.toString());
+//                sorter = TopicSorter.TIME_DESC;
+//                tvSorter.setText(sorter.toString());
+
+                topicListVm.sort(SearchTopicCase.SortBy.TIME, SearchTopicCase.SortDirection.DESC);
                 mDialog.dismiss();
 
                 topicListView.setRefreshing();
@@ -223,6 +243,8 @@ public class TopicListPage extends TabPage {
 
         topicListView.setRefreshing();
         loadTopics();
+
+
     }
 
     @Override
@@ -238,6 +260,8 @@ public class TopicListPage extends TabPage {
 
     private void loadTopics() {
         emptyView.setVisibility(GONE);
+
+        topicListVm.onRefresh();
 
         switch (searchType) {
             case TITLE:
@@ -258,6 +282,9 @@ public class TopicListPage extends TabPage {
 
 
     private void loadMore() {
+
+        topicListVm.onLoadMore();
+
         switch (searchType) {
             case TITLE:
                 mPresenter.loadMore(sorter.sortField(), sorter.sortDirec(), null,

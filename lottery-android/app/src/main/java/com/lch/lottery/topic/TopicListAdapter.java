@@ -1,6 +1,7 @@
 package com.lch.lottery.topic;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -12,9 +13,10 @@ import com.lch.lottery.common.VerticalScrollTextView;
 import com.lch.lottery.topic.model.AdResponse;
 import com.lch.lottery.topic.model.NoticeResponse;
 import com.lch.lottery.topic.model.TopicResponse;
-import com.lch.netkit.common.base.AbsAdapter;
-import com.lch.netkit.common.tool.VF;
-import com.lch.netkit.imageloader.LiImageLoader;
+import com.lchli.imgloader.ImgLoaderManager;
+import com.lchli.imgloader.ImgSource;
+import com.lchli.utils.base.AbsAdapter;
+import com.lchli.utils.tool.VF;
 import com.youth.banner.Banner;
 import com.youth.banner.listener.OnBannerListener;
 import com.youth.banner.loader.ImageLoader;
@@ -90,10 +92,7 @@ public class TopicListAdapter extends AbsAdapter<Object> {
                     public void displayImage(Context context, Object path, ImageView imageView) {
                         AdResponse.Ad ad = (AdResponse.Ad) path;
 
-                        LiImageLoader.instance().builder()
-                                .source(ad.imgUrl)
-                                .view(imageView)
-                                .display(context);
+                        ImgLoaderManager.getINS().display(imageView, ImgSource.create().setImgUri(Uri.parse(ad.imgUrl)), null);
 
                     }
                 });

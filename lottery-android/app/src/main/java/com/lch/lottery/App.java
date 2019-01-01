@@ -6,10 +6,11 @@ import android.content.Intent;
 
 import com.baidu.mapapi.SDKInitializer;
 import com.blankj.utilcode.util.Utils;
+import com.lch.lottery.topic.TopicModuleFactory;
+import com.lch.lottery.topic.TopicModuleInjector;
+import com.lch.lottery.topic.datainterface.TopicRepo;
 import com.lch.netkit.v2.NetKit;
 import com.lchli.imgloader.ImgLoaderManager;
-import com.lchli.lottery.post.PostApiImpl;
-import com.lchli.lottery.postapi.PostApiManager;
 
 
 public class App extends Application {
@@ -32,8 +33,13 @@ public class App extends Application {
         ImgLoaderManager.getINS().init(this,null);
         SDKInitializer.initialize(this);
 
-        PostApiManager.getINS().setPostApiImpl(new PostApiImpl());
-        PostApiManager.getINS().init();
+        TopicModuleInjector.getINS().initFactory(new TopicModuleFactory() {
+            @Override
+            public TopicRepo provideTopicRepo() {
+                return null;
+            }
+        });
+
     }
 
     public static void launchIt(Intent it) {
