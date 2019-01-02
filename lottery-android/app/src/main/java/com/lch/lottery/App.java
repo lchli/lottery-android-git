@@ -5,7 +5,6 @@ import android.app.Application;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
-import com.baidu.mapapi.SDKInitializer;
 import com.blankj.utilcode.util.Utils;
 import com.lch.lottery.topic.TopicModuleFactory;
 import com.lch.lottery.topic.TopicModuleInjector;
@@ -41,7 +40,7 @@ public class App extends Application {
         Utils.init(this);
         NetKit.init(this);
         ImgLoaderManager.getINS().init(this, null);
-        SDKInitializer.initialize(this);
+        //SDKInitializer.initialize(this);
 
         TopicModuleInjector.getINS().initFactory(new TopicModuleFactory() {
             @Override

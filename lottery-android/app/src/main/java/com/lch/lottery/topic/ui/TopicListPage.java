@@ -1,6 +1,7 @@
 package com.lch.lottery.topic.ui;
 
 import android.app.Activity;
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.AttrRes;
@@ -31,7 +32,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
-import androidx.lifecycle.Observer;
 
 
 /**

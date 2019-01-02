@@ -1,6 +1,8 @@
 package com.lch.lottery.topic.vm;
 
 
+import android.arch.lifecycle.MutableLiveData;
+
 import com.lch.lottery.topic.TopicModuleInjector;
 import com.lch.lottery.topic.datainterface.TopicRepo;
 import com.lch.lottery.topic.domain.GetAdCase;
@@ -14,7 +16,6 @@ import com.lchli.arch.clean.ResponseValue;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.lifecycle.MutableLiveData;
 
 /**
  * Created by lichenghang on 2019/1/1.
