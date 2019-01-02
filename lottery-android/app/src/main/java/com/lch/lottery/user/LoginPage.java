@@ -11,7 +11,7 @@ import com.lch.lottery.common.CommonTitleView;
 import com.lch.lottery.common.TabPage;
 import com.lch.lottery.user.controller.UserController;
 import com.lch.lottery.user.model.UserResponse;
-import com.lch.netkit.common.tool.VF;
+import com.lchli.utils.tool.VF;
 
 import java.lang.ref.WeakReference;
 

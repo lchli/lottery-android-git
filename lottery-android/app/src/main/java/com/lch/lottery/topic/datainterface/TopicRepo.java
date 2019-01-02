@@ -15,14 +15,22 @@ public interface TopicRepo {
 
     class QueryParam {
 
-        public String sort;
-        public String sortDirect;
+        public SortField sort;
+        public SortDirection sortDirect;
         public String tag;
         public String title;
         public String topicId;
         public String userId;
         public String page;
         public String pageSize;
+    }
+
+    enum SortDirection {
+        ASC, DESC;
+    }
+
+    enum SortField {
+        UPDATE_TIME;
     }
 
 

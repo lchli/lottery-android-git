@@ -24,9 +24,22 @@ public class NetTopicRepo implements TopicRepo {
     @NonNull
     @Override
     public ResponseValue<List<TopicResponse.Topic>> getTopics(QueryParam param) {
+        String sort = "updateTime";
+        String sortDirect = "asc";
+
+        if (param.sort == SortField.UPDATE_TIME) {
+            sort = "updateTime";
+        }
+
+        if (param.sortDirect == SortDirection.ASC) {
+            sortDirect = "asc";
+        } else if (param.sortDirect == SortDirection.DESC) {
+            sortDirect = "desc";
+        }
+
         ApiRequestParams params = new ApiRequestParams()
-                .addParam("sort", param.sort)
-                .addParam("sortDirect", param.sortDirect)
+                .addParam("sort", sort)
+                .addParam("sortDirect", sortDirect)
                 .addParam("tag", param.tag)
                 .addParam("title", param.title)
                 .addParam("topicId", param.topicId)

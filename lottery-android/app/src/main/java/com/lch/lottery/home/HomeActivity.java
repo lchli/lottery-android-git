@@ -9,9 +9,9 @@ import android.view.MenuItem;
 import com.lch.lottery.R;
 import com.lch.lottery.common.TabPage;
 import com.lch.lottery.filter.FilterPage;
-import com.lch.lottery.topic.TopicListPage;
+import com.lch.lottery.topic.ui.TopicListPage;
 import com.lch.lottery.user.UserPage;
-import com.lch.netkit.common.base.BaseCompatActivity;
+import com.lchli.utils.base.BaseCompatActivity;
 
 import java.util.ArrayList;
 import java.util.List;

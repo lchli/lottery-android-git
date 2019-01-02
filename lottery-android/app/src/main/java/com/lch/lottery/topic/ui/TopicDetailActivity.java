@@ -1,4 +1,4 @@
-package com.lch.lottery.topic;
+package com.lch.lottery.topic.ui;
 
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.lch.lottery.App;
 import com.lch.lottery.R;
 import com.lch.lottery.topic.model.TopicResponse;
-import com.lch.netkit.common.base.BaseCompatActivity;
+import com.lchli.utils.base.BaseCompatActivity;
 
 /**
  * Created by lichenghang on 2017/12/16.

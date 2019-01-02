@@ -1,4 +1,4 @@
-package com.lch.lottery.topic;
+package com.lch.lottery.topic.ui;
 
 import android.content.Context;
 import android.net.Uri;

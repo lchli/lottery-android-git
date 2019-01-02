@@ -73,40 +73,40 @@ android {
 
 }
 
-def support_version = "28.0.0"
-def constraint_layout_version = "28.0.0"
+def support_version = "26.0.0"
+def constraint_layout_version = "26.0.0"
 
 
 configurations.all {
     resolutionStrategy {
         force "com.android.support:appcompat-v7:$support_version",
                 "com.android.support:design:$support_version",
-                "com.android.support.constraint:constraint-layout:$constraint_layout_version"
+                "com.android.support.constraint:constraint-layout:$constraint_layout_version",
+                "com.android.support.constraint:recyclerview-v7:$support_version"
     }
 }
 
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    testCompile 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.12'
 
 
+    implementation "com.android.support:appcompat-v7:$support_version"
+    implementation "com.android.support:design:$support_version"
+    implementation "com.android.support:support-vector-drawable:$support_version"
 
-    compile "com.android.support:appcompat-v7:$support_version"
-    compile "com.android.support:design:$support_version"
-    compile "com.android.support:support-vector-drawable:$support_version"
+    implementation 'com.laputapp:laputapp-pulltorefresh:2.1.1'
+    implementation 'com.youth.banner:banner:1.4.10'
+    implementation 'com.github.rey5137:material:1.2.2'
 
-    compile 'com.laputapp:laputapp-pulltorefresh:2.1.1'
-    compile 'com.youth.banner:banner:1.4.10'
-    compile 'com.github.rey5137:material:1.2.2'
-
-    compile 'com.github.lchli:NetKit:3.0.0'
-    compile 'com.github.lchli:Arch:1.0.0'
-    compile 'com.github.lchli:Utils:1.0.0'
-    compile 'com.github.lchli:ImgLoader:1.0.1'
+    implementation 'com.github.lchli:NetKit:3.0.0'
+    implementation 'com.github.lchli:Arch:1.0.1'
+    implementation 'com.github.lchli:Utils:1.0.0'
+    implementation 'com.github.lchli:ImgLoader:1.0.1'
 
 
 }

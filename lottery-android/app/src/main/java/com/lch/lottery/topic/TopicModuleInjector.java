@@ -1,6 +1,7 @@
 package com.lch.lottery.topic;
 
 import com.lch.lottery.topic.datainterface.AdRepo;
+import com.lch.lottery.topic.datainterface.NoticeRepo;
 import com.lch.lottery.topic.datainterface.TopicRepo;
 
 /**
@@ -31,5 +32,10 @@ public final class TopicModuleInjector implements TopicModuleFactory {
     @Override
     public AdRepo provideAdRepo() {
         return impl.provideAdRepo();
+    }
+
+    @Override
+    public NoticeRepo provideNoticeRepo() {
+        return impl.provideNoticeRepo();
     }
 }

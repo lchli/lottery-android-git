@@ -2,6 +2,7 @@ package com.lch.lottery.user;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.view.View;
 import android.widget.ImageView;
@@ -15,8 +16,9 @@ import com.lch.lottery.common.TabPage;
 import com.lch.lottery.map.PoiSearchActivity;
 import com.lch.lottery.user.controller.UserController;
 import com.lch.lottery.user.model.UserResponse;
-import com.lch.netkit.common.tool.VF;
-import com.lch.netkit.imageloader.LiImageLoader;
+import com.lchli.imgloader.ImgLoaderManager;
+import com.lchli.imgloader.ImgSource;
+import com.lchli.utils.tool.VF;
 
 /**
  * Created by lichenghang on 2017/12/16.
@@ -73,13 +75,7 @@ public class AccountInfoPage extends TabPage {
             }
         });
 
-
-        LiImageLoader.instance().builder()
-                .source("https://www.baidu.com/img/bd_logo1.png")
-                .view(user_portrait)
-                .circle()
-                .display(getContext());
-
+        ImgLoaderManager.getINS().display(user_portrait, ImgSource.create().setImgUri(Uri.parse("https://www.baidu.com/img/bd_logo1.png")), null);
     }
 
     @Override

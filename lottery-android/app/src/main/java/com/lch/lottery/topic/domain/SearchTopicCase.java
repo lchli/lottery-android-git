@@ -1,7 +1,6 @@
 package com.lch.lottery.topic.domain;
 
 import com.lch.lottery.topic.datainterface.TopicRepo;
-import com.lch.lottery.topic.model.SearchType;
 import com.lch.lottery.topic.model.TopicResponse;
 import com.lchli.arch.clean.ResponseValue;
 import com.lchli.arch.clean.UseCase;
@@ -16,43 +15,20 @@ public class SearchTopicCase extends UseCase<SearchTopicCase.Param, List<TopicRe
 
     public static class Param {
         public SearchType searchBy;
-        public SortBy sortBy;
-        public SortDirection sortDirect;
+        public TopicRepo.SortField sortBy;
+        public TopicRepo.SortDirection sortDirect;
         public String searchKey;
         public int page;
         public int pageSize;
     }
 
 
-    public enum SortBy {
-        TIME;
-
-        @Override
-        public String toString() {
-            switch (this) {
-                case TIME:
-                    return "time";
-
-            }
-            return super.toString();
-        }
+    public enum SearchType {
+        ALL,
+        TITLE,
+        TAG;
     }
 
-    public enum SortDirection {
-        ASC, DESC;
-
-
-        @Override
-        public String toString() {
-            switch (this) {
-                case ASC:
-                    return "asc";
-                case DESC:
-                    return "desc";
-            }
-            return super.toString();
-        }
-    }
 
     private TopicRepo topicRepo;
 
@@ -70,8 +46,8 @@ public class SearchTopicCase extends UseCase<SearchTopicCase.Param, List<TopicRe
             queryParam.tag = param.searchKey;
         }
 
-        queryParam.sort = param.sortBy.toString();
-        queryParam.sortDirect = param.sortDirect.toString();
+        queryParam.sort = param.sortBy;
+        queryParam.sortDirect = param.sortDirect;
 
 
         return topicRepo.getTopics(queryParam);

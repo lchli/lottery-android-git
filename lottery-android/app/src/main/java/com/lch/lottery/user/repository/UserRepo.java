@@ -1,7 +1,7 @@
 package com.lch.lottery.user.repository;
 
 import com.lch.lottery.user.model.UserResponse;
-import com.lch.netkit.string.ResponseValue;
+import com.lchli.arch.clean.ResponseValue;
 
 /**
  * Created by lichenghang on 2018/1/29.

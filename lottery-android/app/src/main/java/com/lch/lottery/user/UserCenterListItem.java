@@ -12,7 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.lch.lottery.R;
-import com.lch.netkit.common.tool.VF;
+import com.lchli.utils.tool.VF;
 
 /**
  * Created by lichenghang on 2017/12/16.

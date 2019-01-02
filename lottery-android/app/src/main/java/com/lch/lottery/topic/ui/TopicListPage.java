@@ -1,7 +1,6 @@
-package com.lch.lottery.topic;
+package com.lch.lottery.topic.ui;
 
 import android.app.Activity;
-import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.AttrRes;
@@ -14,7 +13,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.blankj.utilcode.util.EmptyUtils;
 import com.blankj.utilcode.util.ToastUtils;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
@@ -22,10 +20,8 @@ import com.lch.lottery.R;
 import com.lch.lottery.common.BottomSheetDialog;
 import com.lch.lottery.common.TabPage;
 import com.lch.lottery.eventbus.TopicListDataChangedEvent;
-import com.lch.lottery.topic.controller.TopicController;
+import com.lch.lottery.topic.datainterface.TopicRepo;
 import com.lch.lottery.topic.domain.SearchTopicCase;
-import com.lch.lottery.topic.model.SearchType;
-import com.lch.lottery.topic.model.TopicSorter;
 import com.lch.lottery.topic.vm.TopicListVm;
 import com.lch.lottery.util.EventBusUtils;
 import com.lchli.utils.tool.VF;
@@ -33,8 +29,10 @@ import com.lchli.utils.tool.VF;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.lang.ref.WeakReference;
 import java.util.List;
+
+import androidx.lifecycle.Observer;
+
 
 /**
  * Created by bbt-team on 2017/12/15.
@@ -43,7 +41,6 @@ import java.util.List;
 public class TopicListPage extends TabPage {
 
 
-    private final TopicController mPresenter = new TopicController();
     private PullToRefreshListView topicListView;
     private TopicListAdapter mTopicListAdapter;
     private View createTopicFab;
@@ -53,10 +50,7 @@ public class TopicListPage extends TabPage {
     private TextView tvStartSearch;
     private TextView tvSorter;
 
-    private SearchType searchType = SearchType.ALL;
-    private TopicSorter sorter = TopicSorter.TIME_ASC;
-
-    private TopicListVm topicListVm = new TopicListVm();
+    private final TopicListVm topicListVm = new TopicListVm();
 
 
     public TopicListPage(@NonNull Context context) {
@@ -87,9 +81,6 @@ public class TopicListPage extends TabPage {
         tvSorter = VF.f(this, R.id.tvSorter);
 
         topicListView.setMode(PullToRefreshBase.Mode.BOTH);
-        tvSearchBy.setText(searchType.toString());
-        tvSorter.setText(sorter.toString());
-
         tvSearchBy.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -121,22 +112,65 @@ public class TopicListPage extends TabPage {
         topicListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
-                loadTopics();
+                topicListVm.onRefresh(etSearchKey.getText().toString());
             }
 
             @Override
             public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
-                loadMore();
+                topicListVm.onLoadMore();
             }
         });
 
-        topicListVm.topicListDataVm.observeForever(new Observer<List<Object>>() {
+        topicListVm.topicListDataSt.observeForever(new Observer<List<Object>>() {
             @Override
             public void onChanged(@Nullable List<Object> objects) {
                 mTopicListAdapter.refresh(objects);
             }
         });
-
+        topicListVm.emptyViewState.observeForever(new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable Boolean aBoolean) {
+                if (aBoolean != null) {
+                    emptyView.setVisibility(aBoolean ? View.VISIBLE : View.GONE);
+                }
+            }
+        });
+        topicListVm.loadingViewState.observeForever(new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable Boolean aBoolean) {
+                if (aBoolean != null) {
+                    if (aBoolean) {
+                        //do not need impl.
+                    } else {
+                        topicListView.onRefreshComplete();
+                    }
+                }
+            }
+        });
+        topicListVm.loadMoreSt.observeForever(new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String s) {
+                ToastUtils.showShort(s);
+            }
+        });
+        topicListVm.failSt.observeForever(new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String s) {
+                ToastUtils.showShort(s);
+            }
+        });
+        topicListVm.searchByViewState.observeForever(new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String s) {
+                tvSearchBy.setText(s);
+            }
+        });
+        topicListVm.sortByViewState.observeForever(new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String s) {
+                tvSorter.setText(s);
+            }
+        });
 
     }
 
@@ -149,21 +183,17 @@ public class TopicListPage extends TabPage {
         tvByTitle.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                //searchType = SearchType.TITLE;
-                //tvSearchBy.setText(searchType.toString());
-
-                topicListVm.setSearchBy(SearchType.TITLE);
+                topicListVm.setSearchBy(SearchTopicCase.SearchType.TITLE);
                 mDialog.dismiss();
+                topicListView.setRefreshing();
             }
         });
         tvByTag.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-//                searchType = SearchType.TAG;
-//                tvSearchBy.setText(searchType.toString());
-
-                topicListVm.setSearchBy(SearchType.TAG);
+                topicListVm.setSearchBy(SearchTopicCase.SearchType.TAG);
                 mDialog.dismiss();
+                topicListView.setRefreshing();
             }
         });
 
@@ -185,10 +215,8 @@ public class TopicListPage extends TabPage {
         tvTimeAsc.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-//                sorter = TopicSorter.TIME_ASC;
-//                tvSorter.setText(sorter.toString());
 
-                topicListVm.sort(SearchTopicCase.SortBy.TIME, SearchTopicCase.SortDirection.ASC);
+                topicListVm.setSort(TopicRepo.SortField.UPDATE_TIME, TopicRepo.SortDirection.ASC);
 
                 mDialog.dismiss();
                 topicListView.setRefreshing();
@@ -197,10 +225,8 @@ public class TopicListPage extends TabPage {
         tvTimeDesc.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-//                sorter = TopicSorter.TIME_DESC;
-//                tvSorter.setText(sorter.toString());
 
-                topicListVm.sort(SearchTopicCase.SortBy.TIME, SearchTopicCase.SortDirection.DESC);
+                topicListVm.setSort(TopicRepo.SortField.UPDATE_TIME, TopicRepo.SortDirection.DESC);
                 mDialog.dismiss();
 
                 topicListView.setRefreshing();
@@ -215,26 +241,6 @@ public class TopicListPage extends TabPage {
                 .show();
     }
 
-    private void onGetTopics(List<Object> data) {
-        topicListView.onRefreshComplete();
-
-        mTopicListAdapter.refresh(data);
-
-        if (EmptyUtils.isEmpty(data)) {
-            emptyView.setVisibility(VISIBLE);
-        } else {
-            emptyView.setVisibility(GONE);
-        }
-    }
-
-    private void onFail(String msg) {
-        topicListView.onRefreshComplete();
-        ToastUtils.showLong(msg);
-    }
-
-    private void onNoMore() {
-        topicListView.onRefreshComplete();
-    }
 
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
@@ -242,8 +248,6 @@ public class TopicListPage extends TabPage {
         EventBusUtils.register(this);
 
         topicListView.setRefreshing();
-        loadTopics();
-
 
     }
 
@@ -257,86 +261,4 @@ public class TopicListPage extends TabPage {
         topicListView.setRefreshing();
     }
 
-
-    private void loadTopics() {
-        emptyView.setVisibility(GONE);
-
-        topicListVm.onRefresh();
-
-        switch (searchType) {
-            case TITLE:
-                mPresenter.getTopics(sorter.sortField(), sorter.sortDirec(), null, etSearchKey.getText().toString(),
-                        null, null, new Qcb(this));
-                break;
-            case TAG:
-                mPresenter.getTopics(sorter.sortField(), sorter.sortDirec(), etSearchKey.getText().toString(),
-                        null, null, null, new Qcb(this));
-                break;
-            case ALL:
-                mPresenter.getTopics(sorter.sortField(), sorter.sortDirec(), null, null,
-                        null, null, new Qcb(this));
-                break;
-        }
-
-    }
-
-
-    private void loadMore() {
-
-        topicListVm.onLoadMore();
-
-        switch (searchType) {
-            case TITLE:
-                mPresenter.loadMore(sorter.sortField(), sorter.sortDirec(), null,
-                        etSearchKey.getText().toString(), null, null, new Qcb(this));
-                break;
-            case TAG:
-                mPresenter.loadMore(sorter.sortField(), sorter.sortDirec(), etSearchKey.getText().toString(),
-                        null, null, null, new Qcb(this));
-                break;
-            case ALL:
-                mPresenter.loadMore(sorter.sortField(), sorter.sortDirec(), null, null,
-                        null, null, new Qcb(this));
-                break;
-        }
-    }
-
-
-    private static class Qcb implements TopicController.Q {
-
-        private WeakReference<TopicListPage> ref;
-
-        private Qcb(TopicListPage ui) {
-            ref = new WeakReference<>(ui);
-        }
-
-        @Override
-        public void onGet(List<Object> data) {
-            TopicListPage ui = ref.get();
-            if (ui == null) {
-                return;
-            }
-            ui.onGetTopics(data);
-
-        }
-
-        @Override
-        public void onFail(String msg) {
-            TopicListPage ui = ref.get();
-            if (ui == null) {
-                return;
-            }
-            ui.onFail(msg);
-        }
-
-        @Override
-        public void onNoMore() {
-            TopicListPage ui = ref.get();
-            if (ui == null) {
-                return;
-            }
-            ui.onNoMore();
-
-        }
-    }
 }

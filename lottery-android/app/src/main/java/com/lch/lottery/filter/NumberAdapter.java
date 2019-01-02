@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.lch.lottery.R;
-import com.lch.netkit.common.tool.VF;
+import com.lchli.utils.tool.VF;
 import com.rey.material.widget.CheckBox;
 
 import java.util.LinkedList;

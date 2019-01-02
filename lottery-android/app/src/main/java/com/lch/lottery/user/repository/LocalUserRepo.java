@@ -2,8 +2,8 @@ package com.lch.lottery.user.repository;
 
 import com.blankj.utilcode.util.SPUtils;
 import com.lch.lottery.user.model.UserResponse;
-import com.lch.netkit.common.tool.JsonHelper;
-import com.lch.netkit.string.ResponseValue;
+import com.lchli.arch.clean.ResponseValue;
+import com.lchli.utils.tool.JsonHelper;
 
 /**
  * Created by lichenghang on 2018/1/29.

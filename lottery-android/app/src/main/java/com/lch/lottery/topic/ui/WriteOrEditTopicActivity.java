@@ -1,4 +1,4 @@
-package com.lch.lottery.topic;
+package com.lch.lottery.topic.ui;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -15,12 +15,12 @@ import com.lch.lottery.App;
 import com.lch.lottery.R;
 import com.lch.lottery.common.BottomSheetDialog;
 import com.lch.lottery.eventbus.TopicListDataChangedEvent;
-import com.lch.lottery.topic.controller.TopicController;
 import com.lch.lottery.topic.model.TopicResponse;
 import com.lch.lottery.util.DialogUtil;
 import com.lch.lottery.util.EventBusUtils;
-import com.lch.netkit.common.base.BaseCompatActivity;
-import com.lch.netkit.common.tool.VF;
+import com.lchli.utils.base.BaseCompatActivity;
+import com.lchli.utils.tool.VF;
+
 
 /**
  * Created by lichenghang on 2017/12/16.
@@ -29,7 +29,6 @@ import com.lch.netkit.common.tool.VF;
 public class WriteOrEditTopicActivity extends BaseCompatActivity {
 
     private static final String INTENT_KEY_TOPIC = "topic";
-    private TopicController presenter = new TopicController();
 
     private TextView exitWriteTV;
     private TextView saveWriteTV;
@@ -92,26 +91,26 @@ public class WriteOrEditTopicActivity extends BaseCompatActivity {
                 topic.content = content;
 
                 loadingDialog = DialogUtil.showLoadingDialog(WriteOrEditTopicActivity.this);
-                presenter.addOrUpdateTopic(topic, new TopicController.C() {
-                    @Override
-                    public void onSuccess() {
-                        EventBusUtils.post(new TopicListDataChangedEvent());
-
-                        if (loadingDialog != null) {
-                            loadingDialog.dismiss();
-                        }
-                        ToastUtils.showShort("发布成功");
-                        finish();
-                    }
-
-                    @Override
-                    public void onFail(String msg) {
-                        if (loadingDialog != null) {
-                            loadingDialog.dismiss();
-                        }
-                        ToastUtils.showShort("发布失败:"+msg);
-                    }
-                });
+//                presenter.addOrUpdateTopic(topic, new TopicController.C() {
+//                    @Override
+//                    public void onSuccess() {
+//                        EventBusUtils.post(new TopicListDataChangedEvent());
+//
+//                        if (loadingDialog != null) {
+//                            loadingDialog.dismiss();
+//                        }
+//                        ToastUtils.showShort("发布成功");
+//                        finish();
+//                    }
+//
+//                    @Override
+//                    public void onFail(String msg) {
+//                        if (loadingDialog != null) {
+//                            loadingDialog.dismiss();
+//                        }
+//                        ToastUtils.showShort("发布失败:"+msg);
+//                    }
+//                });
 
             }
         });

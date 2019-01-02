@@ -24,7 +24,7 @@ import com.lch.lottery.common.TabPage;
 import com.lch.lottery.filter.cores.FilterFacade;
 import com.lch.lottery.filter.cores.FilterFactory;
 import com.lch.lottery.util.Utils;
-import com.lch.netkit.common.tool.VF;
+import com.lchli.utils.tool.VF;
 import com.rey.material.app.BottomSheetDialog;
 
 import java.util.ArrayList;

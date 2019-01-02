@@ -1,6 +1,7 @@
 package com.lch.lottery.topic;
 
 import com.lch.lottery.topic.datainterface.AdRepo;
+import com.lch.lottery.topic.datainterface.NoticeRepo;
 import com.lch.lottery.topic.datainterface.TopicRepo;
 
 /**
@@ -12,4 +13,6 @@ public interface TopicModuleFactory {
     TopicRepo provideTopicRepo();
 
     AdRepo provideAdRepo();
+
+    NoticeRepo provideNoticeRepo();
 }
