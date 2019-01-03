@@ -38,9 +38,7 @@ public interface TopicRepo {
     ResponseValue<List<TopicResponse.Topic>> getTopics(QueryParam param);
 
     @NonNull
-    ResponseValue addTopic(TopicResponse.Topic topic);
+    ResponseValue saveTopic(TopicResponse.Topic topic);
 
-    @NonNull
-    ResponseValue updateTopic(TopicResponse.Topic topic);
 
 }

@@ -33,7 +33,6 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.List;
 
 
-
 /**
  * Created by bbt-team on 2017/12/15.
  */
@@ -90,7 +89,7 @@ public class TopicListPage extends TabPage {
         tvStartSearch.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                topicListView.setRefreshing();
+                onRefresh();
             }
         });
         tvSorter.setOnClickListener(new OnClickListener() {
@@ -112,7 +111,7 @@ public class TopicListPage extends TabPage {
         topicListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
             @Override
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
-                topicListVm.onRefresh(etSearchKey.getText().toString());
+                onRefresh();
             }
 
             @Override
@@ -185,7 +184,6 @@ public class TopicListPage extends TabPage {
             public void onClick(View v) {
                 topicListVm.setSearchBy(SearchTopicCase.SearchType.TITLE);
                 mDialog.dismiss();
-                topicListView.setRefreshing();
             }
         });
         tvByTag.setOnClickListener(new OnClickListener() {
@@ -193,7 +191,6 @@ public class TopicListPage extends TabPage {
             public void onClick(View v) {
                 topicListVm.setSearchBy(SearchTopicCase.SearchType.TAG);
                 mDialog.dismiss();
-                topicListView.setRefreshing();
             }
         });
 
@@ -219,7 +216,6 @@ public class TopicListPage extends TabPage {
                 topicListVm.setSort(TopicRepo.SortField.UPDATE_TIME, TopicRepo.SortDirection.ASC);
 
                 mDialog.dismiss();
-                topicListView.setRefreshing();
             }
         });
         tvTimeDesc.setOnClickListener(new OnClickListener() {
@@ -228,8 +224,6 @@ public class TopicListPage extends TabPage {
 
                 topicListVm.setSort(TopicRepo.SortField.UPDATE_TIME, TopicRepo.SortDirection.DESC);
                 mDialog.dismiss();
-
-                topicListView.setRefreshing();
             }
         });
 
@@ -247,7 +241,7 @@ public class TopicListPage extends TabPage {
 
         EventBusUtils.register(this);
 
-        topicListView.setRefreshing();
+        onRefresh();
 
     }
 
@@ -258,7 +252,11 @@ public class TopicListPage extends TabPage {
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(TopicListDataChangedEvent event) {
-        topicListView.setRefreshing();
+        onRefresh();
+    }
+
+    private void onRefresh() {
+        topicListVm.onRefresh(etSearchKey.getText().toString());
     }
 
 }

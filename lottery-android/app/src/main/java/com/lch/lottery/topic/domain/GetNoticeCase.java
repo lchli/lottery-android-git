@@ -5,13 +5,11 @@ import com.lch.lottery.topic.model.NoticeResponse;
 import com.lchli.arch.clean.ResponseValue;
 import com.lchli.arch.clean.UseCase;
 
-import java.util.List;
-
 /**
  * Created by lichenghang on 2019/1/1.
  */
 
-public class GetNoticeCase extends UseCase<Void, List<NoticeResponse.Notice>> {
+public class GetNoticeCase extends UseCase<Void, NoticeResponse> {
 
 
     private NoticeRepo repo;
@@ -21,7 +19,7 @@ public class GetNoticeCase extends UseCase<Void, List<NoticeResponse.Notice>> {
     }
 
     @Override
-    protected ResponseValue<List<NoticeResponse.Notice>> execute(Void param) {
+    protected ResponseValue<NoticeResponse> execute(Void param) {
 
         return repo.getNotice();
     }

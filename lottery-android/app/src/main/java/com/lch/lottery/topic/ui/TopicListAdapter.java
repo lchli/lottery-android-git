@@ -90,6 +90,7 @@ public class TopicListAdapter extends AbsAdapter<Object> {
                 vh.banner.setImageLoader(new ImageLoader() {
                     @Override
                     public void displayImage(Context context, Object path, ImageView imageView) {
+                        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
                         AdResponse.Ad ad = (AdResponse.Ad) path;
 
                         ImgLoaderManager.getINS().display(imageView, ImgSource.create().setImgUri(Uri.parse(ad.imgUrl)), null);

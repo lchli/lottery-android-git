@@ -83,7 +83,7 @@ public class NetTopicRepo implements TopicRepo {
 
     @NonNull
     @Override
-    public ResponseValue addTopic(TopicResponse.Topic topic) {
+    public ResponseValue saveTopic(TopicResponse.Topic topic) {
         ApiRequestParams params = new ApiRequestParams()
                 .setUrl(ApiUrl.TOPIC_ADD)
                 .addParam("title", topic.title)
@@ -122,11 +122,7 @@ public class NetTopicRepo implements TopicRepo {
         return ret;
     }
 
-    @NonNull
-    @Override
-    public ResponseValue updateTopic(TopicResponse.Topic topic) {
-        return addTopic(topic);
-    }
+
 
 
 }

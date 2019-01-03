@@ -54,15 +54,11 @@ public class App extends Application {
 
                     @NonNull
                     @Override
-                    public ResponseValue addTopic(TopicResponse.Topic topic) {
+                    public ResponseValue saveTopic(TopicResponse.Topic topic) {
                         return new ResponseValue<>();
                     }
 
-                    @NonNull
-                    @Override
-                    public ResponseValue updateTopic(TopicResponse.Topic topic) {
-                        return new ResponseValue<>();
-                    }
+
                 };
             }
 
@@ -70,17 +66,18 @@ public class App extends Application {
             public AdRepo provideAdRepo() {
                 return new AdRepo() {
                     @Override
-                    public ResponseValue<List<AdResponse.Ad>> getAd() {
-                        ResponseValue<List<AdResponse.Ad>> test = new ResponseValue<>();
-                        test.data = new ArrayList<>();
+                    public ResponseValue<AdResponse> getAd() {
+                        ResponseValue<AdResponse> test = new ResponseValue<>();
+                        test.data = new AdResponse();
+                        test.data.data = new ArrayList<>();
 
                         AdResponse.Ad ad = new AdResponse.Ad();
                         ad.imgUrl = "https://www.baidu.com/img/bd_logo1.png";
-                        test.data.add(ad);
+                        test.data.data.add(ad);
 
                         ad = new AdResponse.Ad();
                         ad.imgUrl = "https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=3756930651,2591929300&fm=173&s=A4006DB54A23149C5F9981060300D0C1&w=218&h=146&img.JPEG";
-                        test.data.add(ad);
+                        test.data.data.add(ad);
 
                         return test;
                     }
@@ -91,19 +88,20 @@ public class App extends Application {
             public NoticeRepo provideNoticeRepo() {
                 return new NoticeRepo() {
                     @Override
-                    public ResponseValue<List<NoticeResponse.Notice>> getNotice() {
-                        ResponseValue<List<NoticeResponse.Notice>> test = new ResponseValue<>();
-                        test.data = new ArrayList<>();
+                    public ResponseValue<NoticeResponse> getNotice() {
+                        ResponseValue<NoticeResponse> test = new ResponseValue<>();
+                        test.data = new NoticeResponse();
+                        test.data.data = new ArrayList<>();
 
                         NoticeResponse.Notice notice = new NoticeResponse.Notice();
                         notice.text = "最新开奖：256期 开奖号123 试机号098";
                         notice.linkUrl = "1";
-                        test.data.add(notice);
+                        test.data.data.add(notice);
 
                         notice = new NoticeResponse.Notice();
                         notice.text = "最新开奖：257期 开奖号123 试机号098";
                         notice.linkUrl = "2";
-                        test.data.add(notice);
+                        test.data.data.add(notice);
 
                         return test;
                     }

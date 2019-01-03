@@ -1,6 +1,7 @@
 package com.lch.lottery.topic.ui;
 
 import android.app.Dialog;
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,10 +15,9 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.lch.lottery.App;
 import com.lch.lottery.R;
 import com.lch.lottery.common.BottomSheetDialog;
-import com.lch.lottery.eventbus.TopicListDataChangedEvent;
 import com.lch.lottery.topic.model.TopicResponse;
+import com.lch.lottery.topic.vm.WriteTopicVm;
 import com.lch.lottery.util.DialogUtil;
-import com.lch.lottery.util.EventBusUtils;
 import com.lchli.utils.base.BaseCompatActivity;
 import com.lchli.utils.tool.VF;
 
@@ -37,6 +37,7 @@ public class WriteOrEditTopicActivity extends BaseCompatActivity {
     private EditText topicContentEt;
     private TopicResponse.Topic topic;
     private Dialog loadingDialog;
+    private WriteTopicVm writeTopicVm = new WriteTopicVm();
 
     public static void launch(@Nullable TopicResponse.Topic topic, Context context) {
         Intent it = new Intent(context, WriteOrEditTopicActivity.class);
@@ -83,38 +84,36 @@ public class WriteOrEditTopicActivity extends BaseCompatActivity {
                 String tag = topicTagEt.getText().toString();
                 String content = topicContentEt.getText().toString();
 
-                if (topic == null) {
-                    topic = new TopicResponse.Topic();
-                }
-                topic.title = title;
-                topic.tag = tag;
-                topic.content = content;
-
-                loadingDialog = DialogUtil.showLoadingDialog(WriteOrEditTopicActivity.this);
-//                presenter.addOrUpdateTopic(topic, new TopicController.C() {
-//                    @Override
-//                    public void onSuccess() {
-//                        EventBusUtils.post(new TopicListDataChangedEvent());
-//
-//                        if (loadingDialog != null) {
-//                            loadingDialog.dismiss();
-//                        }
-//                        ToastUtils.showShort("发布成功");
-//                        finish();
-//                    }
-//
-//                    @Override
-//                    public void onFail(String msg) {
-//                        if (loadingDialog != null) {
-//                            loadingDialog.dismiss();
-//                        }
-//                        ToastUtils.showShort("发布失败:"+msg);
-//                    }
-//                });
-
+                writeTopicVm.onSaveTopic(title, tag, content, topic != null ? topic.uid : null);
             }
         });
-
+        writeTopicVm.closeUiAction.observeForever(new Observer<Void>() {
+            @Override
+            public void onChanged(@Nullable Void aVoid) {
+                finish();
+            }
+        });
+        writeTopicVm.loadingViewState.observeForever(new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable Boolean aBoolean) {
+                if (aBoolean) {
+                    if (loadingDialog == null) {
+                        loadingDialog = DialogUtil.showLoadingDialog(WriteOrEditTopicActivity.this);
+                    }
+                } else {
+                    if (loadingDialog != null) {
+                        loadingDialog.dismiss();
+                        loadingDialog = null;
+                    }
+                }
+            }
+        });
+        writeTopicVm.toastState.observeForever(new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String s) {
+                ToastUtils.showShort(s);
+            }
+        });
 
     }
 

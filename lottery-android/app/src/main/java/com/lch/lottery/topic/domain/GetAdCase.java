@@ -5,13 +5,11 @@ import com.lch.lottery.topic.model.AdResponse;
 import com.lchli.arch.clean.ResponseValue;
 import com.lchli.arch.clean.UseCase;
 
-import java.util.List;
-
 /**
  * Created by lichenghang on 2019/1/1.
  */
 
-public class GetAdCase extends UseCase<Void, List<AdResponse.Ad>> {
+public class GetAdCase extends UseCase<Void, AdResponse> {
 
 
     private AdRepo repo;
@@ -21,8 +19,7 @@ public class GetAdCase extends UseCase<Void, List<AdResponse.Ad>> {
     }
 
     @Override
-    protected ResponseValue<List<AdResponse.Ad>> execute(Void param) {
-
+    protected ResponseValue<AdResponse> execute(Void parameters) {
         return repo.getAd();
     }
 }

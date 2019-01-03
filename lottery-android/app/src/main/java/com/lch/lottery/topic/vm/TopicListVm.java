@@ -50,10 +50,12 @@ public class TopicListVm {
     public void setSort(TopicRepo.SortField sortBy, TopicRepo.SortDirection sortDirection) {
         this.sortBy = sortBy;
         this.sortDirection = sortDirection;
+        onRefresh(searchKey);
     }
 
     public void setSearchBy(SearchTopicCase.SearchType searchType) {
         this.searchType = searchType;
+        onRefresh(searchKey);
     }
 
     private String formatSortText() {
@@ -122,14 +124,14 @@ public class TopicListVm {
                     haveMore = false;
                 }
 
-                ResponseValue<List<NoticeResponse.Notice>> noticeRes = getNoticeCase.invokeSync(null);
+                ResponseValue<NoticeResponse> noticeRes = getNoticeCase.invokeSync(null);
                 if (!noticeRes.hasError() && noticeRes.data != null) {
-                    datas.addAll(0, noticeRes.data);
+                    datas.add(0, noticeRes.data);
                 }
 
-                ResponseValue<List<AdResponse.Ad>> adRes = getAdCase.invokeSync(null);
+                ResponseValue<AdResponse> adRes = getAdCase.invokeSync(null);
                 if (!adRes.hasError() && adRes.data != null) {
-                    datas.addAll(0, adRes.data);
+                    datas.add(0, adRes.data);
                 }
 
                 currentDatas.addAll(datas);
@@ -152,7 +154,7 @@ public class TopicListVm {
         loadingViewState.postValue(true);
 
         if (!haveMore) {
-            loadMoreSt.postValue("no more.");
+            loadMoreSt.postValue("已无更多数据！");
             loadingViewState.postValue(false);
             return;
         }
