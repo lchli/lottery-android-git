@@ -1,7 +1,6 @@
 package com.lch.lottery.topic.ui;
 
 import android.app.Activity;
-import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.AttrRes;
@@ -23,13 +22,14 @@ import com.lch.lottery.common.TabPage;
 import com.lch.lottery.eventbus.TopicListDataChangedEvent;
 import com.lch.lottery.topic.datainterface.TopicRepo;
 import com.lch.lottery.topic.domain.SearchTopicCase;
-import com.lch.lottery.topic.vm.TopicListVm;
+import com.lch.lottery.topic.presenter.TopicListPresenter;
 import com.lch.lottery.util.EventBusUtils;
 import com.lchli.utils.tool.VF;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 
@@ -37,7 +37,7 @@ import java.util.List;
  * Created by bbt-team on 2017/12/15.
  */
 
-public class TopicListPage extends TabPage {
+public class TopicListPage extends TabPage implements TopicListPresenter.MvpView {
 
 
     private PullToRefreshListView topicListView;
@@ -49,7 +49,7 @@ public class TopicListPage extends TabPage {
     private TextView tvStartSearch;
     private TextView tvSorter;
 
-    private final TopicListVm topicListVm = new TopicListVm();
+    private TopicListPresenter topicListVm;
 
 
     public TopicListPage(@NonNull Context context) {
@@ -70,6 +70,8 @@ public class TopicListPage extends TabPage {
     @Override
     public void init() {
         super.init();
+        topicListVm = new TopicListPresenter(new ViewProxy(this));
+
         View.inflate(getContext(), R.layout.page_topic_list, this);
         topicListView = VF.f(this, R.id.topicListView);
         createTopicFab = VF.f(this, R.id.createTopicFab);
@@ -120,57 +122,118 @@ public class TopicListPage extends TabPage {
             }
         });
 
-        topicListVm.topicListDataSt.observeForever(new Observer<List<Object>>() {
-            @Override
-            public void onChanged(@Nullable List<Object> objects) {
-                mTopicListAdapter.refresh(objects);
-            }
-        });
-        topicListVm.emptyViewState.observeForever(new Observer<Boolean>() {
-            @Override
-            public void onChanged(@Nullable Boolean aBoolean) {
-                if (aBoolean != null) {
-                    emptyView.setVisibility(aBoolean ? View.VISIBLE : View.GONE);
-                }
-            }
-        });
-        topicListVm.loadingViewState.observeForever(new Observer<Boolean>() {
-            @Override
-            public void onChanged(@Nullable Boolean aBoolean) {
-                if (aBoolean != null) {
-                    if (aBoolean) {
-                        //do not need impl.
-                    } else {
-                        topicListView.onRefreshComplete();
-                    }
-                }
-            }
-        });
-        topicListVm.loadMoreSt.observeForever(new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                ToastUtils.showShort(s);
-            }
-        });
-        topicListVm.failSt.observeForever(new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                ToastUtils.showShort(s);
-            }
-        });
-        topicListVm.searchByViewState.observeForever(new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                tvSearchBy.setText(s);
-            }
-        });
-        topicListVm.sortByViewState.observeForever(new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                tvSorter.setText(s);
-            }
-        });
+    }
 
+    @Override
+    public void showListData(List<Object> datas) {
+        mTopicListAdapter.refresh(datas);
+    }
+
+    @Override
+    public void showFail(String msg) {
+        ToastUtils.showShort(msg);
+
+    }
+
+    @Override
+    public void showNoMore(String msg) {
+        ToastUtils.showShort(msg);
+    }
+
+    @Override
+    public void showLoading(boolean show) {
+        if (show) {
+            //do nothing.
+        } else {
+            topicListView.onRefreshComplete();
+        }
+    }
+
+    @Override
+    public void showEmpty(boolean show) {
+        emptyView.setVisibility(show ? View.VISIBLE : View.GONE);
+    }
+
+    @Override
+    public void showSortText(String text) {
+        tvSorter.setText(text);
+    }
+
+    @Override
+    public void showSearchByText(String text) {
+        tvSearchBy.setText(text);
+    }
+
+    private static class ViewProxy implements TopicListPresenter.MvpView {
+
+        private final WeakReference<TopicListPresenter.MvpView> ref;
+
+        private ViewProxy(TopicListPresenter.MvpView activity) {
+            this.ref = new WeakReference<>(activity);
+        }
+
+
+        @Override
+        public void showListData(List<Object> datas) {
+            TopicListPresenter.MvpView ui = ref.get();
+            if (ui != null) {
+                ui.showListData(datas);
+            }
+
+        }
+
+        @Override
+        public void showFail(String msg) {
+            TopicListPresenter.MvpView ui = ref.get();
+            if (ui != null) {
+                ui.showFail(msg);
+            }
+        }
+
+        @Override
+        public void showNoMore(String msg) {
+            TopicListPresenter.MvpView ui = ref.get();
+            if (ui != null) {
+                ui.showNoMore(msg);
+            }
+
+        }
+
+        @Override
+        public void showLoading(boolean show) {
+            TopicListPresenter.MvpView ui = ref.get();
+            if (ui != null) {
+                ui.showLoading(show);
+            }
+
+        }
+
+        @Override
+        public void showEmpty(boolean show) {
+            TopicListPresenter.MvpView ui = ref.get();
+            if (ui != null) {
+                ui.showEmpty(show);
+            }
+
+        }
+
+        @Override
+        public void showSortText(String text) {
+            TopicListPresenter.MvpView ui = ref.get();
+            if (ui != null) {
+                ui.showSortText(text);
+            }
+
+        }
+
+        @Override
+        public void showSearchByText(String text) {
+            TopicListPresenter.MvpView ui = ref.get();
+            if (ui != null) {
+                ui.showSearchByText(text);
+            }
+
+        }
     }
 
     private void showSearchBy() {

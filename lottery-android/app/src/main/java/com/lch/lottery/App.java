@@ -25,6 +25,8 @@ import java.util.List;
 public class App extends Application {
 
     private static App app;
+    private static List<TopicResponse.Topic> test = new ArrayList<>();
+
 
     @Override
     public void onCreate() {
@@ -46,15 +48,20 @@ public class App extends Application {
             @Override
             public TopicRepo provideTopicRepo() {
                 return new TopicRepo() {
+
                     @NonNull
                     @Override
                     public ResponseValue<List<TopicResponse.Topic>> getTopics(QueryParam param) {
-                        return new ResponseValue<>();
+                        ResponseValue<List<TopicResponse.Topic>> ret = new ResponseValue<>();
+                        ret.data = test;
+
+                        return ret;
                     }
 
                     @NonNull
                     @Override
                     public ResponseValue saveTopic(TopicResponse.Topic topic) {
+                        test.add(topic);
                         return new ResponseValue<>();
                     }
 

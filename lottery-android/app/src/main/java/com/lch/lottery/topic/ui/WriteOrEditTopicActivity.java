@@ -1,7 +1,6 @@
 package com.lch.lottery.topic.ui;
 
 import android.app.Dialog;
-import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,17 +15,19 @@ import com.lch.lottery.App;
 import com.lch.lottery.R;
 import com.lch.lottery.common.BottomSheetDialog;
 import com.lch.lottery.topic.model.TopicResponse;
-import com.lch.lottery.topic.vm.WriteTopicVm;
+import com.lch.lottery.topic.presenter.WriteTopicPresenter;
 import com.lch.lottery.util.DialogUtil;
 import com.lchli.utils.base.BaseCompatActivity;
 import com.lchli.utils.tool.VF;
+
+import java.lang.ref.WeakReference;
 
 
 /**
  * Created by lichenghang on 2017/12/16.
  */
 
-public class WriteOrEditTopicActivity extends BaseCompatActivity {
+public class WriteOrEditTopicActivity extends BaseCompatActivity implements WriteTopicPresenter.MvpView {
 
     private static final String INTENT_KEY_TOPIC = "topic";
 
@@ -37,7 +38,7 @@ public class WriteOrEditTopicActivity extends BaseCompatActivity {
     private EditText topicContentEt;
     private TopicResponse.Topic topic;
     private Dialog loadingDialog;
-    private WriteTopicVm writeTopicVm = new WriteTopicVm();
+    private WriteTopicPresenter writeTopicPresenter;
 
     public static void launch(@Nullable TopicResponse.Topic topic, Context context) {
         Intent it = new Intent(context, WriteOrEditTopicActivity.class);
@@ -50,6 +51,7 @@ public class WriteOrEditTopicActivity extends BaseCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         topic = (TopicResponse.Topic) getIntent().getSerializableExtra(INTENT_KEY_TOPIC);
+        writeTopicPresenter = new WriteTopicPresenter(new ViewProxy(this));
 
         setContentView(R.layout.activity_write_or_edit_topic);
         exitWriteTV = f(R.id.exitWriteTV);
@@ -84,34 +86,7 @@ public class WriteOrEditTopicActivity extends BaseCompatActivity {
                 String tag = topicTagEt.getText().toString();
                 String content = topicContentEt.getText().toString();
 
-                writeTopicVm.onSaveTopic(title, tag, content, topic != null ? topic.uid : null);
-            }
-        });
-        writeTopicVm.closeUiAction.observeForever(new Observer<Void>() {
-            @Override
-            public void onChanged(@Nullable Void aVoid) {
-                finish();
-            }
-        });
-        writeTopicVm.loadingViewState.observeForever(new Observer<Boolean>() {
-            @Override
-            public void onChanged(@Nullable Boolean aBoolean) {
-                if (aBoolean) {
-                    if (loadingDialog == null) {
-                        loadingDialog = DialogUtil.showLoadingDialog(WriteOrEditTopicActivity.this);
-                    }
-                } else {
-                    if (loadingDialog != null) {
-                        loadingDialog.dismiss();
-                        loadingDialog = null;
-                    }
-                }
-            }
-        });
-        writeTopicVm.toastState.observeForever(new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                ToastUtils.showShort(s);
+                writeTopicPresenter.onSaveTopic(title, tag, content, topic != null ? topic.uid : null);
             }
         });
 
@@ -184,10 +159,77 @@ public class WriteOrEditTopicActivity extends BaseCompatActivity {
 
     @Override
     protected void onDestroy() {
+        dismissLoading();
+        super.onDestroy();
+    }
+
+    @Override
+    public void showLoading() {
+        if (loadingDialog == null) {
+            loadingDialog = DialogUtil.showLoadingDialog(WriteOrEditTopicActivity.this);
+        }
+    }
+
+    @Override
+    public void dismissLoading() {
         if (loadingDialog != null) {
             loadingDialog.dismiss();
+            loadingDialog = null;
         }
-        super.onDestroy();
+    }
+
+    @Override
+    public void showToast(String msg) {
+        ToastUtils.showShort(msg);
+    }
+
+    @Override
+    public void closeUi() {
+        finish();
+
+    }
+
+
+    private static class ViewProxy implements WriteTopicPresenter.MvpView {
+
+        private final WeakReference<WriteTopicPresenter.MvpView> uiRef;
+
+        private ViewProxy(WriteTopicPresenter.MvpView activity) {
+            this.uiRef = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void showLoading() {
+            final WriteTopicPresenter.MvpView ui = uiRef.get();
+            if (ui != null) {
+                ui.showLoading();
+            }
+
+        }
+
+        @Override
+        public void dismissLoading() {
+            final WriteTopicPresenter.MvpView ui = uiRef.get();
+            if (ui != null) {
+                ui.dismissLoading();
+            }
+        }
+
+        @Override
+        public void showToast(String msg) {
+            final WriteTopicPresenter.MvpView ui = uiRef.get();
+            if (ui != null) {
+                ui.showToast(msg);
+            }
+        }
+
+        @Override
+        public void closeUi() {
+            final WriteTopicPresenter.MvpView ui = uiRef.get();
+            if (ui != null) {
+                ui.closeUi();
+            }
+        }
     }
 
 

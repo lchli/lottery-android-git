@@ -1,7 +1,7 @@
-package com.lch.lottery.topic.vm;
+package com.lch.lottery.topic.presenter;
 
 
-import android.arch.lifecycle.MutableLiveData;
+import android.support.annotation.NonNull;
 
 import com.lch.lottery.topic.TopicModuleInjector;
 import com.lch.lottery.topic.datainterface.TopicRepo;
@@ -21,20 +21,30 @@ import java.util.List;
  * Created by lichenghang on 2019/1/1.
  */
 
-public class TopicListVm {
+public class TopicListPresenter {
+
+    public interface MvpView {
+        void showListData(List<Object> datas);
+
+        void showFail(String msg);
+
+        void showNoMore(String msg);
+
+        void showLoading(boolean show);
+
+        void showEmpty(boolean show);
+
+        void showSortText(String text);
+
+        void showSearchByText(String text);
+
+    }
+
 
     private SearchTopicCase searchTopicCase = new SearchTopicCase(TopicModuleInjector.getINS().provideTopicRepo());
     private GetAdCase getAdCase = new GetAdCase(TopicModuleInjector.getINS().provideAdRepo());
     private GetNoticeCase getNoticeCase = new GetNoticeCase(TopicModuleInjector.getINS().provideNoticeRepo());
 
-
-    public MutableLiveData<List<Object>> topicListDataSt = new MutableLiveData<>();
-    public MutableLiveData<String> failSt = new MutableLiveData<>();
-    public MutableLiveData<Boolean> emptyViewState = new MutableLiveData<>();
-    public MutableLiveData<Boolean> loadingViewState = new MutableLiveData<>();
-    public MutableLiveData<String> loadMoreSt = new MutableLiveData<>();
-    public MutableLiveData<String> searchByViewState = new MutableLiveData<>();
-    public MutableLiveData<String> sortByViewState = new MutableLiveData<>();
 
     private TopicRepo.SortField sortBy = TopicRepo.SortField.UPDATE_TIME;
     private TopicRepo.SortDirection sortDirection = TopicRepo.SortDirection.ASC;
@@ -45,7 +55,11 @@ public class TopicListVm {
     private int page = 0;
     private static final int PAGE_SIZE = 20;
     private boolean haveMore = true;
+    private MvpView view;
 
+    public TopicListPresenter(@NonNull MvpView view) {
+        this.view = view;
+    }
 
     public void setSort(TopicRepo.SortField sortBy, TopicRepo.SortDirection sortDirection) {
         this.sortBy = sortBy;
@@ -93,9 +107,10 @@ public class TopicListVm {
         currentDatas.clear();
         page = 0;
         haveMore = true;
-        emptyViewState.postValue(false);
-        sortByViewState.postValue(formatSortText());
-        searchByViewState.postValue(formatSearchByText());
+        view.showEmpty(false);
+        view.showSortText(formatSortText());
+        view.showSearchByText(formatSearchByText());
+
 
         final SearchTopicCase.Param param = new SearchTopicCase.Param();
         param.sortBy = sortBy;
@@ -110,10 +125,16 @@ public class TopicListVm {
             public void run() {
                 final List<Object> datas = new ArrayList<>();
 
-                ResponseValue<List<TopicResponse.Topic>> topicRes = searchTopicCase.invokeSync(param);
+                final ResponseValue<List<TopicResponse.Topic>> topicRes = searchTopicCase.invokeSync(param);
                 if (topicRes.hasError()) {
-                    failSt.postValue(topicRes.getErrorMsg());
-                    loadingViewState.postValue(false);
+                    getAdCase.getTaskExecutor().executeOnMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            view.showFail(topicRes.getErrorMsg());
+                            view.showLoading(false);
+                        }
+                    });
+
                     return;
                 }
 
@@ -136,12 +157,19 @@ public class TopicListVm {
 
                 currentDatas.addAll(datas);
 
-                topicListDataSt.postValue(datas);
-                if (datas.isEmpty()) {
-                    emptyViewState.postValue(true);
-                }
 
-                loadingViewState.postValue(false);
+                getAdCase.getTaskExecutor().executeOnMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        view.showListData(datas);
+                        if (datas.isEmpty()) {
+                            view.showEmpty(true);
+                        }
+
+                        view.showLoading(false);
+                    }
+                });
+
 
             }
         });
@@ -151,11 +179,16 @@ public class TopicListVm {
 
 
     public void onLoadMore() {
-        loadingViewState.postValue(true);
 
         if (!haveMore) {
-            loadMoreSt.postValue("已无更多数据！");
-            loadingViewState.postValue(false);
+            getAdCase.getTaskExecutor().executeOnMainThread(new Runnable() {
+                @Override
+                public void run() {
+                    view.showNoMore("已无更多数据！");
+                    view.showLoading(false);
+                }
+            });
+
             return;
         }
 
@@ -172,10 +205,16 @@ public class TopicListVm {
             public void run() {
                 final List<Object> datas = new ArrayList<>();
 
-                ResponseValue<List<TopicResponse.Topic>> topicRes = searchTopicCase.invokeSync(param);
+                final ResponseValue<List<TopicResponse.Topic>> topicRes = searchTopicCase.invokeSync(param);
                 if (topicRes.hasError()) {
-                    failSt.postValue(topicRes.getErrorMsg());
-                    loadingViewState.postValue(false);
+                    getAdCase.getTaskExecutor().executeOnMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            view.showFail(topicRes.getErrorMsg());
+                            view.showLoading(false);
+                        }
+                    });
+
                     return;
                 }
 
@@ -189,9 +228,14 @@ public class TopicListVm {
 
                 datas.addAll(currentDatas);
 
-                topicListDataSt.postValue(datas);
+                getAdCase.getTaskExecutor().executeOnMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        view.showListData(datas);
+                        view.showLoading(false);
+                    }
+                });
 
-                loadingViewState.postValue(false);
 
             }
         });

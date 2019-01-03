@@ -1,6 +1,6 @@
-package com.lch.lottery.topic.vm;
+package com.lch.lottery.topic.presenter;
 
-import android.arch.lifecycle.MutableLiveData;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.lch.lottery.eventbus.TopicListDataChangedEvent;
@@ -10,16 +10,29 @@ import com.lchli.arch.clean.ControllerCallback;
 import com.lchli.utils.tool.EventBusUtils;
 
 /**
+ * presenter具有更好的可测试性，并且ui更容易变更为其它实现。
  * Created by Administrator on 2019/1/2.
  */
 
-public class WriteTopicVm {
+public class WriteTopicPresenter {
+
+    public interface MvpView {
+        void showLoading();
+
+        void dismissLoading();
+
+        void showToast(String msg);
+
+        void closeUi();
+    }
 
 
     private AddTopicCase addTopicCase = new AddTopicCase(TopicModuleInjector.getINS().provideTopicRepo());
-    public MutableLiveData<Boolean> loadingViewState = new MutableLiveData<>();
-    public MutableLiveData<String> toastState = new MutableLiveData<>();
-    public MutableLiveData<Void> closeUiAction = new MutableLiveData<>();
+    private MvpView view;
+
+    public WriteTopicPresenter(@NonNull MvpView view) {
+        this.view = view;
+    }
 
     public void onSaveTopic(String title, String tag, String content, String topicId) {
         AddTopicCase.Param param = new AddTopicCase.Param();
@@ -29,22 +42,22 @@ public class WriteTopicVm {
         param.content = content;
         param.topicId = topicId;
 
-        loadingViewState.postValue(true);
-
+        view.showLoading();
 
         addTopicCase.invokeAsync(param, new ControllerCallback<Void>() {
             @Override
             public void onSuccess(@Nullable Void aVoid) {
-                loadingViewState.postValue(false);
                 EventBusUtils.post(new TopicListDataChangedEvent());
-                toastState.postValue("发布成功");
-                closeUiAction.postValue(null);
+                view.showToast("发布成功");
+                view.dismissLoading();
+                view.closeUi();
+
             }
 
             @Override
             public void onError(int code, String msg) {
-                loadingViewState.postValue(false);
-                toastState.postValue(msg);
+                view.showToast(msg);
+                view.dismissLoading();
             }
         });
     }
