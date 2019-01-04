@@ -79,10 +79,19 @@
             android:gravity="center"
             android:text="还没有数据" />
 
-        <com.handmark.pulltorefresh.library.PullToRefreshListView
-            android:id="@+id/topicListView"
+        <com.scwang.smartrefresh.layout.SmartRefreshLayout
+            android:id="@+id/refreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
+
+            <ListView
+                android:id="@+id/topicListView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#fff"
+                android:overScrollMode="never" />
+        </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
 
     </FrameLayout>
 

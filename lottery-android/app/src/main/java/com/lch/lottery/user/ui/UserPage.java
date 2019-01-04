@@ -1,4 +1,4 @@
-package com.lch.lottery.user;
+package com.lch.lottery.user.ui;
 
 import android.app.Activity;
 import android.content.Context;

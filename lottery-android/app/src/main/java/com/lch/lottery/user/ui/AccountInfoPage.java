@@ -1,4 +1,4 @@
-package com.lch.lottery.user;
+package com.lch.lottery.user.ui;
 
 import android.app.Activity;
 import android.content.Context;
@@ -14,6 +14,7 @@ import com.lch.lottery.BuildConfig;
 import com.lch.lottery.R;
 import com.lch.lottery.common.TabPage;
 import com.lch.lottery.map.PoiSearchActivity;
+import com.lch.lottery.user.widget.UserCenterListItem;
 import com.lch.lottery.user.controller.UserController;
 import com.lch.lottery.user.model.UserResponse;
 import com.lchli.imgloader.ImgLoaderManager;

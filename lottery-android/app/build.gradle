@@ -98,14 +98,16 @@ dependencies {
     implementation "com.android.support:support-vector-drawable:$support_version"
 
 
-    implementation 'com.laputapp:laputapp-pulltorefresh:2.1.1'
     implementation 'com.youth.banner:banner:1.4.10'
     implementation 'com.github.rey5137:material:1.2.2'
 
     implementation 'com.github.lchli:NetKit:3.0.0'
-    implementation 'com.github.lchli:Arch:1.0.3'
+    implementation 'com.github.lchli:Arch:1.0.6'
     implementation 'com.github.lchli:Utils:1.0.0'
     implementation 'com.github.lchli:ImgLoader:1.0.2'
+
+    implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-18'
+    implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.0-alpha-18'//没有使用特殊Header，可以不加这行
 
 
 }

@@ -1,10 +1,6 @@
 package com.lch.lottery.user.controller;
 
-import com.lch.lottery.DI;
 import com.lch.lottery.user.model.UserResponse;
-import com.lch.lottery.user.repository.UserRepo;
-import com.lch.netkit.v2.NetKit;
-import com.lchli.arch.clean.ResponseValue;
 
 /**
  * Created by lichenghang on 2018/1/29.
@@ -28,9 +24,6 @@ public class UserController {
         void onFail(String msg);
 
     }
-
-    private UserRepo localUserRepo = DI.injectLocalUserRepo();
-    private UserRepo remoteUserRepo = DI.injectNetUserRepo();
 
 
     public void clearCurrentUser(final ClearCallback cb) {

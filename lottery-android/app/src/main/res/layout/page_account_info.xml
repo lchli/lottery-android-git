@@ -33,14 +33,14 @@
             android:textSize="16dp" />
     </LinearLayout>
 
-    <com.lch.lottery.user.UserCenterListItem
+    <com.lch.lottery.user.widget.UserCenterListItem
         android:id="@+id/about_app_widget"
         style="@style/UserCenterListLayout"
         android:layout_marginTop="10dp"
         app:UserCenterListItem_icon="@drawable/ic_home_black_24dp"
         app:UserCenterListItem_text="版本号：1.0" />
 
-    <com.lch.lottery.user.UserCenterListItem
+    <com.lch.lottery.user.widget.UserCenterListItem
         android:id="@+id/check_update_widget"
         style="@style/UserCenterListLayout"
         app:UserCenterListItem_icon="@drawable/ic_home_black_24dp"
@@ -48,7 +48,7 @@
 
         />
 
-    <com.lch.lottery.user.UserCenterListItem
+    <com.lch.lottery.user.widget.UserCenterListItem
         android:id="@+id/lottery_place_widget"
         style="@style/UserCenterListLayout"
         app:UserCenterListItem_icon="@drawable/ic_home_black_24dp"
@@ -56,7 +56,7 @@
 
         />
 
-    <com.lch.lottery.user.UserCenterListItem
+    <com.lch.lottery.user.widget.UserCenterListItem
         android:id="@+id/special_number_widget"
         style="@style/UserCenterListLayout"
         app:UserCenterListItem_icon="@drawable/ic_home_black_24dp"
@@ -64,7 +64,7 @@
 
         />
 
-    <com.lch.lottery.user.UserCenterListItem
+    <com.lch.lottery.user.widget.UserCenterListItem
         android:id="@+id/lottery_graphy_widget"
         style="@style/UserCenterListLayout"
         app:UserCenterListItem_icon="@drawable/ic_home_black_24dp"
@@ -72,7 +72,7 @@
 
         />
 
-    <com.lch.lottery.user.UserCenterListItem
+    <com.lch.lottery.user.widget.UserCenterListItem
         android:id="@+id/logout_widget"
         style="@style/UserCenterListLayout"
         app:UserCenterListItem_icon="@drawable/ic_home_black_24dp"

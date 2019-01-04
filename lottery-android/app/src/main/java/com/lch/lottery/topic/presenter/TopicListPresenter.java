@@ -12,6 +12,7 @@ import com.lch.lottery.topic.model.AdResponse;
 import com.lch.lottery.topic.model.NoticeResponse;
 import com.lch.lottery.topic.model.TopicResponse;
 import com.lchli.arch.clean.ResponseValue;
+import com.lchli.arch.clean.UseCase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,14 +121,14 @@ public class TopicListPresenter {
         param.page = page;
         param.pageSize = PAGE_SIZE;
 
-        getAdCase.getTaskExecutor().executeOnDiskIO(new Runnable() {
+        UseCase.executeOnDiskIO(new Runnable() {
             @Override
             public void run() {
                 final List<Object> datas = new ArrayList<>();
 
                 final ResponseValue<List<TopicResponse.Topic>> topicRes = searchTopicCase.invokeSync(param);
                 if (topicRes.hasError()) {
-                    getAdCase.getTaskExecutor().executeOnMainThread(new Runnable() {
+                    UseCase.executeOnMainThread(new Runnable() {
                         @Override
                         public void run() {
                             view.showFail(topicRes.getErrorMsg());
@@ -157,8 +158,7 @@ public class TopicListPresenter {
 
                 currentDatas.addAll(datas);
 
-
-                getAdCase.getTaskExecutor().executeOnMainThread(new Runnable() {
+                UseCase.executeOnMainThread(new Runnable() {
                     @Override
                     public void run() {
                         view.showListData(datas);
@@ -181,14 +181,8 @@ public class TopicListPresenter {
     public void onLoadMore() {
 
         if (!haveMore) {
-            getAdCase.getTaskExecutor().executeOnMainThread(new Runnable() {
-                @Override
-                public void run() {
-                    view.showNoMore("已无更多数据！");
-                    view.showLoading(false);
-                }
-            });
-
+            view.showNoMore("已无更多数据！");
+            view.showLoading(false);
             return;
         }
 
@@ -200,14 +194,14 @@ public class TopicListPresenter {
         param.page = page;
         param.pageSize = PAGE_SIZE;
 
-        getAdCase.getTaskExecutor().executeOnDiskIO(new Runnable() {
+        UseCase.executeOnDiskIO(new Runnable() {
             @Override
             public void run() {
                 final List<Object> datas = new ArrayList<>();
 
                 final ResponseValue<List<TopicResponse.Topic>> topicRes = searchTopicCase.invokeSync(param);
                 if (topicRes.hasError()) {
-                    getAdCase.getTaskExecutor().executeOnMainThread(new Runnable() {
+                    UseCase.executeOnMainThread(new Runnable() {
                         @Override
                         public void run() {
                             view.showFail(topicRes.getErrorMsg());
@@ -228,7 +222,7 @@ public class TopicListPresenter {
 
                 datas.addAll(currentDatas);
 
-                getAdCase.getTaskExecutor().executeOnMainThread(new Runnable() {
+                UseCase.executeOnMainThread(new Runnable() {
                     @Override
                     public void run() {
                         view.showListData(datas);

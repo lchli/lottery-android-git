@@ -1,4 +1,4 @@
-package com.lch.lottery.user;
+package com.lch.lottery.user.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;

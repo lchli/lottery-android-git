@@ -1,7 +1,7 @@
-package com.lch.lottery.user.repository;
+package com.lch.lottery.user.dataimpl;
 
 import com.apkfuns.logutils.LogUtils;
-import com.lch.lottery.DI;
+import com.lch.lottery.user.datainterface.RemoteUserSource;
 import com.lch.lottery.user.model.UserResponse;
 import com.lch.lottery.util.ApiUrl;
 import com.lch.netkit.v2.NetKit;
@@ -12,15 +12,12 @@ import com.lchli.arch.clean.ResponseValue;
 import com.lchli.utils.tool.JsonHelper;
 
 /**
- * Created by lichenghang on 2018/1/29.
+ * Created by Administrator on 2019/1/4.
  */
 
-public class NetUserRepo implements UserRepo {
-
-    private UserRepo localUserRepo = DI.injectLocalUserRepo();
-
+public class CloudUserSourceImpl implements RemoteUserSource {
     @Override
-    public ResponseValue<UserResponse.User> get(String username, String pwd) {
+    public ResponseValue<UserResponse.User> query(String username, String pwd) {
         ResponseValue<UserResponse.User> ret = new ResponseValue<>();
 
         ApiRequestParams params = new ApiRequestParams()
@@ -42,8 +39,6 @@ public class NetUserRepo implements UserRepo {
                     throw new IllegalStateException(response.message);
                 }
 
-                localUserRepo.add(response.data);
-
                 return response.data;
 
             }
@@ -57,12 +52,10 @@ public class NetUserRepo implements UserRepo {
         ret.data = res.data;
 
         return ret;
-
     }
 
     @Override
     public ResponseValue<UserResponse.User> add(UserResponse.User user) {
-
         ResponseValue<UserResponse.User> ret = new ResponseValue<>();
 
         ApiRequestParams params = new ApiRequestParams()
@@ -84,7 +77,6 @@ public class NetUserRepo implements UserRepo {
                 if (response.status != ApiUrl.API_CODE_SUCCESS || response.data == null) {
                     throw new IllegalStateException(response.message);
                 }
-                localUserRepo.add(response.data);
 
                 return response.data;
 
@@ -99,7 +91,6 @@ public class NetUserRepo implements UserRepo {
         ret.data = res.data;
 
         return ret;
-
     }
 
     @Override
@@ -126,7 +117,6 @@ public class NetUserRepo implements UserRepo {
                 if (response.status != ApiUrl.API_CODE_SUCCESS || response.data == null) {
                     throw new IllegalStateException(response.message);
                 }
-                localUserRepo.add(response.data);
 
                 return response.data;
 
@@ -141,15 +131,5 @@ public class NetUserRepo implements UserRepo {
         ret.data = res.data;
 
         return ret;
-    }
-
-    @Override
-    public ResponseValue<UserResponse.User> getCurrentUser() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public ResponseValue deleteCurrentUser() {
-        throw new UnsupportedOperationException();
     }
 }

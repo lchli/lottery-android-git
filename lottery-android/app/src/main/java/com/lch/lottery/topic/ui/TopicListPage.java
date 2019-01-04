@@ -14,8 +14,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.ToastUtils;
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.lch.lottery.R;
 import com.lch.lottery.common.BottomSheetDialog;
 import com.lch.lottery.common.TabPage;
@@ -25,6 +23,12 @@ import com.lch.lottery.topic.domain.SearchTopicCase;
 import com.lch.lottery.topic.presenter.TopicListPresenter;
 import com.lch.lottery.util.EventBusUtils;
 import com.lchli.utils.tool.VF;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
+import com.scwang.smartrefresh.layout.header.ClassicsHeader;
+import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -40,7 +44,8 @@ import java.util.List;
 public class TopicListPage extends TabPage implements TopicListPresenter.MvpView {
 
 
-    private PullToRefreshListView topicListView;
+    private ListView topicListView;
+    private SmartRefreshLayout refreshLayout;
     private TopicListAdapter mTopicListAdapter;
     private View createTopicFab;
     private View emptyView;
@@ -74,6 +79,7 @@ public class TopicListPage extends TabPage implements TopicListPresenter.MvpView
 
         View.inflate(getContext(), R.layout.page_topic_list, this);
         topicListView = VF.f(this, R.id.topicListView);
+        refreshLayout = VF.f(this, R.id.refreshLayout);
         createTopicFab = VF.f(this, R.id.createTopicFab);
         emptyView = VF.f(this, R.id.emptyView);
         etSearchKey = VF.f(this, R.id.etSearchKey);
@@ -81,7 +87,6 @@ public class TopicListPage extends TabPage implements TopicListPresenter.MvpView
         tvStartSearch = VF.f(this, R.id.tvStartSearch);
         tvSorter = VF.f(this, R.id.tvSorter);
 
-        topicListView.setMode(PullToRefreshBase.Mode.BOTH);
         tvSearchBy.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,7 +96,7 @@ public class TopicListPage extends TabPage implements TopicListPresenter.MvpView
         tvStartSearch.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                onRefresh();
+                onRefreshImpl();
             }
         });
         tvSorter.setOnClickListener(new OnClickListener() {
@@ -110,17 +115,20 @@ public class TopicListPage extends TabPage implements TopicListPresenter.MvpView
                 WriteOrEditTopicActivity.launch(null, getContext());
             }
         });
-        topicListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
+        refreshLayout.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
-            public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
-                onRefresh();
-            }
-
-            @Override
-            public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+            public void onLoadMore(@NonNull RefreshLayout refreshLayout) {
                 topicListVm.onLoadMore();
             }
         });
+        refreshLayout.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(@NonNull RefreshLayout refreshLayout) {
+                onRefreshImpl();
+            }
+        });
+        refreshLayout.setRefreshHeader(new ClassicsHeader(getContext()));
+        refreshLayout.setRefreshFooter(new ClassicsFooter(getContext()));
 
     }
 
@@ -145,7 +153,8 @@ public class TopicListPage extends TabPage implements TopicListPresenter.MvpView
         if (show) {
             //do nothing.
         } else {
-            topicListView.onRefreshComplete();
+            refreshLayout.finishRefresh();
+            refreshLayout.finishLoadMore();
         }
     }
 
@@ -304,7 +313,7 @@ public class TopicListPage extends TabPage implements TopicListPresenter.MvpView
 
         EventBusUtils.register(this);
 
-        onRefresh();
+        onRefreshImpl();
 
     }
 
@@ -315,10 +324,10 @@ public class TopicListPage extends TabPage implements TopicListPresenter.MvpView
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEvent(TopicListDataChangedEvent event) {
-        onRefresh();
+        onRefreshImpl();
     }
 
-    private void onRefresh() {
+    private void onRefreshImpl() {
         topicListVm.onRefresh(etSearchKey.getText().toString());
     }
 

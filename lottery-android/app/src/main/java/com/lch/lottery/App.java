@@ -14,6 +14,11 @@ import com.lch.lottery.topic.datainterface.TopicRepo;
 import com.lch.lottery.topic.model.AdResponse;
 import com.lch.lottery.topic.model.NoticeResponse;
 import com.lch.lottery.topic.model.TopicResponse;
+import com.lch.lottery.user.UserModuleFactory;
+import com.lch.lottery.user.UserModuleInjector;
+import com.lch.lottery.user.datainterface.RemoteUserSource;
+import com.lch.lottery.user.datainterface.UserSessionSource;
+import com.lch.lottery.user.model.UserResponse;
 import com.lch.netkit.v2.NetKit;
 import com.lchli.arch.clean.ResponseValue;
 import com.lchli.imgloader.ImgLoaderManager;
@@ -111,6 +116,48 @@ public class App extends Application {
                         test.data.data.add(notice);
 
                         return test;
+                    }
+                };
+            }
+        });
+
+        UserModuleInjector.getINS().initFactory(new UserModuleFactory() {
+            @Override
+            public RemoteUserSource provideRemoteUserSource() {
+                return new RemoteUserSource() {
+                    @Override
+                    public ResponseValue<UserResponse.User> query(String username, String pwd) {
+                        return null;
+                    }
+
+                    @Override
+                    public ResponseValue<UserResponse.User> add(UserResponse.User user) {
+                        return new ResponseValue<>().setData(new UserResponse.User());
+                    }
+
+                    @Override
+                    public ResponseValue<UserResponse.User> update(UserResponse.User user) {
+                        return null;
+                    }
+                };
+            }
+
+            @Override
+            public UserSessionSource provideUserSessionSource() {
+                return new UserSessionSource() {
+                    @Override
+                    public ResponseValue<UserResponse.User> getSession() {
+                        return null;
+                    }
+
+                    @Override
+                    public ResponseValue saveSession(UserResponse.User user) {
+                        return new ResponseValue();
+                    }
+
+                    @Override
+                    public ResponseValue clearSession() {
+                        return null;
                     }
                 };
             }
