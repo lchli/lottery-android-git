@@ -31,6 +31,7 @@ public class App extends Application {
 
     private static App app;
     private static List<TopicResponse.Topic> test = new ArrayList<>();
+    private static UserResponse.User testUser;
 
 
     @Override
@@ -127,17 +128,21 @@ public class App extends Application {
                 return new RemoteUserSource() {
                     @Override
                     public ResponseValue<UserResponse.User> query(String username, String pwd) {
-                        return null;
+                        return new ResponseValue<UserResponse.User>().setData(testUser);
                     }
 
                     @Override
                     public ResponseValue<UserResponse.User> add(UserResponse.User user) {
-                        return new ResponseValue<>().setData(new UserResponse.User());
+                        testUser = user;
+                        testUser.userId = System.currentTimeMillis() + "";
+
+                        return new ResponseValue<UserResponse.User>().setData(testUser);
                     }
 
                     @Override
                     public ResponseValue<UserResponse.User> update(UserResponse.User user) {
-                        return null;
+                        testUser = user;
+                        return new ResponseValue<UserResponse.User>().setData(testUser);
                     }
                 };
             }
@@ -147,17 +152,19 @@ public class App extends Application {
                 return new UserSessionSource() {
                     @Override
                     public ResponseValue<UserResponse.User> getSession() {
-                        return null;
+                        return new ResponseValue<UserResponse.User>().setData(testUser);
                     }
 
                     @Override
-                    public ResponseValue saveSession(UserResponse.User user) {
-                        return new ResponseValue();
+                    public ResponseValue<Void> saveSession(UserResponse.User user) {
+                        testUser = user;
+                        return new ResponseValue<>();
                     }
 
                     @Override
-                    public ResponseValue clearSession() {
-                        return null;
+                    public ResponseValue<Void> clearSession() {
+                        testUser = null;
+                        return new ResponseValue<>();
                     }
                 };
             }

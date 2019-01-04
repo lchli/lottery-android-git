@@ -10,7 +10,7 @@ import com.lchli.arch.clean.ResponseValue;
 public interface UserSessionSource {
     ResponseValue<UserResponse.User> getSession();
 
-    ResponseValue saveSession(UserResponse.User user);
+    ResponseValue<Void> saveSession(UserResponse.User user);
 
-    ResponseValue clearSession();
+    ResponseValue<Void> clearSession();
 }

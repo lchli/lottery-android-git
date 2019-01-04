@@ -24,7 +24,7 @@ public class SaveUserSessionCase extends UseCase<SaveUserSessionCase.Param, Void
     @Override
     protected ResponseValue<Void> execute(Param parameters) {
         if (parameters.session == null) {
-            return new ResponseValue<>().setErrorMsg("参数不能为空！");
+            return new ResponseValue<Void>().setErrorMsg("参数不能为空！");
         }
         return userSessionSource.saveSession(parameters.session);
     }

@@ -1,6 +1,7 @@
 package com.lch.lottery.user.ui;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -14,24 +15,27 @@ import com.lch.lottery.BuildConfig;
 import com.lch.lottery.R;
 import com.lch.lottery.common.TabPage;
 import com.lch.lottery.map.PoiSearchActivity;
+import com.lch.lottery.user.presenter.AccountInfoPresenter;
 import com.lch.lottery.user.widget.UserCenterListItem;
-import com.lch.lottery.user.controller.UserController;
-import com.lch.lottery.user.model.UserResponse;
+import com.lch.lottery.util.DialogUtil;
 import com.lchli.imgloader.ImgLoaderManager;
 import com.lchli.imgloader.ImgSource;
 import com.lchli.utils.tool.VF;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Created by lichenghang on 2017/12/16.
  */
 
-public class AccountInfoPage extends TabPage {
+public class AccountInfoPage extends TabPage implements AccountInfoPresenter.MvpView {
 
 
     private UserPage userPage;
     private TextView user_nick;
     private ImageView user_portrait;
-    private UserController userController = new UserController();
+    private AccountInfoPresenter accountInfoPresenter;
+    private Dialog loading;
 
     public AccountInfoPage(@NonNull Context context, UserPage userPage) {
         super(context);
@@ -41,6 +45,8 @@ public class AccountInfoPage extends TabPage {
 
 
     protected void init() {
+        accountInfoPresenter = new AccountInfoPresenter(new ViewProxy(this));
+
         View.inflate(getContext(), R.layout.page_account_info, this);
         user_nick = VF.f(this, R.id.user_nick);
         user_portrait = VF.f(this, R.id.user_portrait);
@@ -53,18 +59,7 @@ public class AccountInfoPage extends TabPage {
         logout_widget.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                userController.clearCurrentUser(new UserController.ClearCallback() {
-                    @Override
-                    public void onSuccess() {
-                        userPage.gotoLogin();
-                    }
-
-                    @Override
-                    public void onFail(String msg) {
-                        ToastUtils.showShort(msg);
-
-                    }
-                });
+                accountInfoPresenter.onLogout();
 
             }
         });
@@ -81,24 +76,81 @@ public class AccountInfoPage extends TabPage {
 
     @Override
     public void onActivityResumed(Activity activity) {
-        userController.getCurrentUser(new UserController.Callback() {
-            @Override
-            public void onSuccess(UserResponse.User data) {
-                if (data == null) {
-                    return;
-                }
-                user_nick.setText(data.userName);
-            }
-
-            @Override
-            public void onFail(String msg) {
-                ToastUtils.showShort(msg);
-
-            }
-        });
-
-
+        accountInfoPresenter.onLoadUserInfo();
     }
 
 
+    @Override
+    public void showLoading(boolean show) {
+        if (show) {
+            if (loading == null) {
+                loading = DialogUtil.showLoadingDialog((Activity) getContext());
+            }
+        } else {
+            if (loading != null) {
+                loading.dismiss();
+                loading = null;
+            }
+        }
+
+    }
+
+    @Override
+    public void showToast(String msg) {
+        ToastUtils.showShort(msg);
+    }
+
+    @Override
+    public void showUserNick(String text) {
+        user_nick.setText(text);
+    }
+
+    @Override
+    public void gotoLoginUi() {
+        userPage.gotoLogin();
+    }
+
+    private static class ViewProxy implements AccountInfoPresenter.MvpView {
+
+        private final WeakReference<AccountInfoPresenter.MvpView> uiRef;
+
+        private ViewProxy(AccountInfoPresenter.MvpView activity) {
+            this.uiRef = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void showLoading(boolean show) {
+            final AccountInfoPresenter.MvpView ui = uiRef.get();
+            if (ui != null) {
+                ui.showLoading(show);
+            }
+        }
+
+        @Override
+        public void showUserNick(String text) {
+            final AccountInfoPresenter.MvpView ui = uiRef.get();
+            if (ui != null) {
+                ui.showUserNick(text);
+            }
+        }
+
+        @Override
+        public void gotoLoginUi() {
+            final AccountInfoPresenter.MvpView ui = uiRef.get();
+            if (ui != null) {
+                ui.gotoLoginUi();
+            }
+        }
+
+
+        @Override
+        public void showToast(String msg) {
+            final AccountInfoPresenter.MvpView ui = uiRef.get();
+            if (ui != null) {
+                ui.showToast(msg);
+            }
+        }
+
+
+    }
 }

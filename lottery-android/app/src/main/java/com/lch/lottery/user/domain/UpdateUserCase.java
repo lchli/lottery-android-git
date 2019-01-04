@@ -28,7 +28,7 @@ public class UpdateUserCase extends UseCase<UpdateUserCase.Param, UserResponse.U
     @Override
     protected ResponseValue<UserResponse.User> execute(Param parameters) {
         if (TextUtils.isEmpty(parameters.userName) || TextUtils.isEmpty(parameters.userPwd) || TextUtils.isEmpty(parameters.userId)) {
-            return new ResponseValue<>().setErrorMsg("参数不能为空！");
+            return new ResponseValue<UserResponse.User>().setErrorMsg("参数不能为空！");
         }
 
         UserResponse.User user = new UserResponse.User();

@@ -27,7 +27,7 @@ public class RegisterCase extends UseCase<RegisterCase.Param, UserResponse.User>
     @Override
     protected ResponseValue<UserResponse.User> execute(Param parameters) {
         if (TextUtils.isEmpty(parameters.userName) || TextUtils.isEmpty(parameters.userPwd)) {
-            return new ResponseValue<>().setErrorMsg("参数不能为空！");
+            return new ResponseValue<UserResponse.User>().setErrorMsg("参数不能为空！");
         }
 
         UserResponse.User user = new UserResponse.User();

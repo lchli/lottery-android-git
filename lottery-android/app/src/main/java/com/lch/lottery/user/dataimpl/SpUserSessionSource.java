@@ -24,14 +24,14 @@ public class SpUserSessionSource implements UserSessionSource {
     }
 
     @Override
-    public ResponseValue saveSession(UserResponse.User user) {
+    public ResponseValue<Void> saveSession(UserResponse.User user) {
         SPUtils.getInstance(USER_SP_FILE).put(KEY_USER, JsonHelper.toJSONString(user));
-        return new ResponseValue();
+        return new ResponseValue<>();
     }
 
     @Override
-    public ResponseValue clearSession() {
+    public ResponseValue<Void> clearSession() {
         SPUtils.getInstance(USER_SP_FILE).put(KEY_USER, "");
-        return new ResponseValue();
+        return new ResponseValue<>();
     }
 }

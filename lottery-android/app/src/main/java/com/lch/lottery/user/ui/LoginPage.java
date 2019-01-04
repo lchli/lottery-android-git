@@ -1,5 +1,7 @@
 package com.lch.lottery.user.ui;
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -9,8 +11,8 @@ import com.blankj.utilcode.util.ToastUtils;
 import com.lch.lottery.R;
 import com.lch.lottery.common.CommonTitleView;
 import com.lch.lottery.common.TabPage;
-import com.lch.lottery.user.controller.UserController;
-import com.lch.lottery.user.model.UserResponse;
+import com.lch.lottery.user.presenter.LoginPresenter;
+import com.lch.lottery.util.DialogUtil;
 import com.lchli.utils.tool.VF;
 
 import java.lang.ref.WeakReference;
@@ -19,14 +21,15 @@ import java.lang.ref.WeakReference;
  * Created by lichenghang on 2017/12/16.
  */
 
-public class LoginPage extends TabPage {
+public class LoginPage extends TabPage implements LoginPresenter.MvpView {
 
-    private UserController userController = new UserController();
     private UserPage userPage;
     private View loginBT;
     private EditText userAccountET;
     private EditText userPwdET;
     private CommonTitleView common_title;
+    private LoginPresenter loginPresenter;
+    private Dialog loading;
 
     public LoginPage(@NonNull Context context, UserPage userPage) {
         super(context);
@@ -36,6 +39,8 @@ public class LoginPage extends TabPage {
 
 
     protected void init() {
+        loginPresenter = new LoginPresenter(new ViewProxy(this));
+
         View.inflate(getContext(), R.layout.fragment_login, this);
         loginBT = VF.f(this, R.id.login_widget);
         userAccountET = VF.f(this, R.id.user_account_edit);
@@ -57,36 +62,72 @@ public class LoginPage extends TabPage {
                 String username = userAccountET.getText().toString();
                 String pwd = userPwdET.getText().toString();
 
-                userController.login(username, pwd, new LoginCb(LoginPage.this));
+                loginPresenter.onLogin(username, pwd);
             }
         });
     }
 
-
-    private static class LoginCb implements UserController.Callback {
-
-        private WeakReference<LoginPage> ref;
-
-        private LoginCb(LoginPage loginPage) {
-            ref = new WeakReference<>(loginPage);
-
-        }
-
-        @Override
-        public void onSuccess(UserResponse.User data) {
-            LoginPage loginPage = ref.get();
-            if (loginPage != null) {
-                loginPage.userPage.gotoAccountInfo();
+    @Override
+    public void showLoading(boolean show) {
+        if (show) {
+            if (loading == null) {
+                loading = DialogUtil.showLoadingDialog((Activity) getContext());
             }
-
-        }
-
-        @Override
-        public void onFail(String msg) {
-            LoginPage loginPage = ref.get();
-            if (loginPage != null) {
-                ToastUtils.showShort(msg);
+        } else {
+            if (loading != null) {
+                loading.dismiss();
+                loading = null;
             }
         }
+
     }
+
+    @Override
+    public void showToast(String msg) {
+        ToastUtils.showShort(msg);
+    }
+
+    @Override
+    public void gotoAccountInfoPage() {
+        userPage.gotoAccountInfo();
+    }
+
+
+    private static class ViewProxy implements LoginPresenter.MvpView {
+
+        private final WeakReference<LoginPresenter.MvpView> uiRef;
+
+        private ViewProxy(LoginPresenter.MvpView activity) {
+            this.uiRef = new WeakReference<>(activity);
+        }
+
+        @Override
+        public void showLoading(boolean show) {
+            final LoginPresenter.MvpView ui = uiRef.get();
+            if (ui != null) {
+                ui.showLoading(show);
+            }
+        }
+
+        @Override
+        public void gotoAccountInfoPage() {
+            final LoginPresenter.MvpView ui = uiRef.get();
+            if (ui != null) {
+                ui.gotoAccountInfoPage();
+            }
+        }
+
+
+        @Override
+        public void showToast(String msg) {
+            final LoginPresenter.MvpView ui = uiRef.get();
+            if (ui != null) {
+                ui.showToast(msg);
+            }
+        }
+
+
+    }
+
+
 }
