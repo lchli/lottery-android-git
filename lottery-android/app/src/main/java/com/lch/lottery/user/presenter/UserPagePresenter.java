@@ -18,8 +18,6 @@ public class UserPagePresenter {
 
         void showToast(String msg);
 
-        void gotoLoginUi();
-
         void gotoAccountInfo();
     }
 
@@ -39,11 +37,7 @@ public class UserPagePresenter {
             public void onSuccess(@Nullable UserResponse.User user) {
                 mvpView.showLoading(false);
 
-                if (user != null) {
-                    mvpView.gotoAccountInfo();
-                } else {
-                    mvpView.gotoLoginUi();
-                }
+                mvpView.gotoAccountInfo();
 
             }
 

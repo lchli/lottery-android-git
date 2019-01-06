@@ -121,11 +121,6 @@ public class UserPage extends TabPage implements UserPagePresenter.MvpView {
         ToastUtils.showShort(msg);
     }
 
-    @Override
-    public void gotoLoginUi() {
-        gotoLogin();
-    }
-
 
     private static class ViewProxy implements UserPagePresenter.MvpView {
 
@@ -148,14 +143,6 @@ public class UserPage extends TabPage implements UserPagePresenter.MvpView {
             final UserPagePresenter.MvpView ui = uiRef.get();
             if (ui != null) {
                 ui.gotoAccountInfo();
-            }
-        }
-
-        @Override
-        public void gotoLoginUi() {
-            final UserPagePresenter.MvpView ui = uiRef.get();
-            if (ui != null) {
-                ui.gotoLoginUi();
             }
         }
 

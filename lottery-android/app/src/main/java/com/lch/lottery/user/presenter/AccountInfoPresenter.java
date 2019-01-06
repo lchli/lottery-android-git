@@ -2,11 +2,14 @@ package com.lch.lottery.user.presenter;
 
 import android.support.annotation.Nullable;
 
+import com.lch.lottery.R;
 import com.lch.lottery.user.UserModuleInjector;
 import com.lch.lottery.user.domain.ClearUserSessionCase;
 import com.lch.lottery.user.domain.GetUserSessionCase;
 import com.lch.lottery.user.model.UserResponse;
 import com.lchli.arch.clean.ControllerCallback;
+import com.lchli.arch.clean.ResponseValue;
+import com.lchli.arch.clean.UseCase;
 
 /**
  * Created by lichenghang on 2019/1/4.
@@ -20,6 +23,12 @@ public class AccountInfoPresenter {
         void showToast(String msg);
 
         void showUserNick(String text);
+
+        void showLoginBtText(String text);
+
+        void showUserHead(String path);
+
+        void showUserHead(int resId);
 
         void gotoLoginUi();
     }
@@ -42,8 +51,12 @@ public class AccountInfoPresenter {
                 mvpView.showLoading(false);
                 if (user != null) {
                     mvpView.showUserNick(user.userName);
+                    mvpView.showUserHead("https://www.baidu.com/img/bd_logo1.png");
+                    mvpView.showLoginBtText("退出登录");
                 } else {
-                    mvpView.showToast("未登录！");
+                    mvpView.showUserNick("");
+                    mvpView.showUserHead(R.drawable.default_head);
+                    mvpView.showLoginBtText("去登录");
                 }
 
             }
@@ -59,24 +72,63 @@ public class AccountInfoPresenter {
 
     }
 
-    public void onLogout() {
+    public void onLogoutBtClick() {
         mvpView.showLoading(true);
 
-        clearUserSessionCase.invokeAsync(null, new ControllerCallback<Void>() {
+        UseCase.executeOnDiskIO(new Runnable() {
             @Override
-            public void onSuccess(@Nullable Void aVoid) {
-                mvpView.showLoading(false);
-                mvpView.gotoLoginUi();
+            public void run() {
+                final ResponseValue<UserResponse.User> res = getUserSessionCase.invokeSync(null);
+                if (res.hasError()) {
+                    UseCase.executeOnMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mvpView.showLoading(false);
+                            mvpView.showToast(res.getErrorMsg());
+                        }
+                    });
+                    return;
+                }
 
-            }
+                if (res.data == null) {
+                    UseCase.executeOnMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mvpView.showLoading(false);
+                            mvpView.gotoLoginUi();
+                        }
+                    });
+                    return;
+                }
 
-            @Override
-            public void onError(int code, String msg) {
-                mvpView.showLoading(false);
-                mvpView.showToast(msg);
+                final ResponseValue<Void> clearRes = clearUserSessionCase.invokeSync(null);
+                if (clearRes.hasError()) {
+                    UseCase.executeOnMainThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            mvpView.showLoading(false);
+                            mvpView.showToast(clearRes.getErrorMsg());
+                        }
+                    });
+                    return;
+                }
+
+                UseCase.executeOnMainThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mvpView.showLoading(false);
+
+                        mvpView.showUserNick("");
+                        mvpView.showUserHead(R.drawable.default_head);
+                        mvpView.showLoginBtText("去登录");
+                    }
+                });
+
 
             }
         });
+
+
     }
 
 }

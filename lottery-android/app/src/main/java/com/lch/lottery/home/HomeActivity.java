@@ -6,12 +6,18 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
 
+import com.lch.lottery.App;
 import com.lch.lottery.R;
 import com.lch.lottery.common.TabPage;
-import com.lch.lottery.filter.FilterPage;
+import com.lch.lottery.eventbus.SwitchLotteryEvent;
+import com.lch.lottery.servicetool.ui.ServicePage;
 import com.lch.lottery.topic.ui.TopicListPage;
 import com.lch.lottery.user.ui.UserPage;
+import com.lch.lottery.util.EventBusUtils;
 import com.lchli.utils.base.BaseCompatActivity;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +56,8 @@ public class HomeActivity extends BaseCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        EventBusUtils.register(this);
+
         setContentView(R.layout.activity_home);
 
         mContent = f(R.id.content);
@@ -75,7 +83,7 @@ public class HomeActivity extends BaseCompatActivity {
 
         pages = new ArrayList<>();
         pages.add(new TopicListPage(this));
-        pages.add(new FilterPage(this));
+        pages.add(new ServicePage(this));
         pages.add(new UserPage(this));
 
         mContent.setAdapter(new HomePageAdapter(pages));
@@ -87,6 +95,11 @@ public class HomeActivity extends BaseCompatActivity {
 
     }
 
+    @Override
+    public void finish() {
+        super.finish();
+        EventBusUtils.unregister(this);
+    }
 
     @Override
     protected void onDestroy() {
@@ -98,5 +111,12 @@ public class HomeActivity extends BaseCompatActivity {
 
     }
 
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEvent(SwitchLotteryEvent event) {
+        finish();
+
+        App.launchActivity(HomeActivity.class);
+    }
 
 }

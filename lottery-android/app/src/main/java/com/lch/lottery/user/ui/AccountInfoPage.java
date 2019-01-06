@@ -10,14 +10,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.blankj.utilcode.util.ToastUtils;
-import com.lch.lottery.App;
 import com.lch.lottery.BuildConfig;
 import com.lch.lottery.R;
 import com.lch.lottery.common.TabPage;
-import com.lch.lottery.map.PoiSearchActivity;
+import com.lch.lottery.eventbus.SwitchLotteryEvent;
 import com.lch.lottery.user.presenter.AccountInfoPresenter;
 import com.lch.lottery.user.widget.UserCenterListItem;
 import com.lch.lottery.util.DialogUtil;
+import com.lch.lottery.util.EventBusUtils;
 import com.lchli.imgloader.ImgLoaderManager;
 import com.lchli.imgloader.ImgSource;
 import com.lchli.utils.tool.VF;
@@ -36,6 +36,8 @@ public class AccountInfoPage extends TabPage implements AccountInfoPresenter.Mvp
     private ImageView user_portrait;
     private AccountInfoPresenter accountInfoPresenter;
     private Dialog loading;
+    private UserCenterListItem logout_widget;
+    private UserCenterListItem switchLotteryView;
 
     public AccountInfoPage(@NonNull Context context, UserPage userPage) {
         super(context);
@@ -50,28 +52,29 @@ public class AccountInfoPage extends TabPage implements AccountInfoPresenter.Mvp
         View.inflate(getContext(), R.layout.page_account_info, this);
         user_nick = VF.f(this, R.id.user_nick);
         user_portrait = VF.f(this, R.id.user_portrait);
+        switchLotteryView = VF.f(this, R.id.switchLotteryView);
 
-        View lottery_place_widget = VF.f(this, R.id.lottery_place_widget);
-        View logout_widget = VF.f(this, R.id.logout_widget);
+        logout_widget = VF.f(this, R.id.logout_widget);
         UserCenterListItem about_app_widget = VF.f(this, R.id.about_app_widget);
         about_app_widget.setText(getResources().getString(R.string.app_version_info, BuildConfig.VERSION_NAME));
 
         logout_widget.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                accountInfoPresenter.onLogout();
+                accountInfoPresenter.onLogoutBtClick();
 
             }
         });
 
-        lottery_place_widget.setOnClickListener(new OnClickListener() {
+        switchLotteryView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                App.launchActivity(PoiSearchActivity.class);
+                EventBusUtils.post(new SwitchLotteryEvent());
+
             }
         });
 
-        ImgLoaderManager.getINS().display(user_portrait, ImgSource.create().setImgUri(Uri.parse("https://www.baidu.com/img/bd_logo1.png")), null);
+
     }
 
     @Override
@@ -105,9 +108,26 @@ public class AccountInfoPage extends TabPage implements AccountInfoPresenter.Mvp
         user_nick.setText(text);
     }
 
+
     @Override
     public void gotoLoginUi() {
         userPage.gotoLogin();
+    }
+
+    @Override
+    public void showLoginBtText(String text) {
+        logout_widget.setText(text);
+    }
+
+    @Override
+    public void showUserHead(String path) {
+        ImgLoaderManager.getINS().display(user_portrait, ImgSource.create().setImgUri(Uri.parse(path)), null);
+
+    }
+
+    @Override
+    public void showUserHead(int resId) {
+        user_portrait.setImageResource(resId);
     }
 
     private static class ViewProxy implements AccountInfoPresenter.MvpView {
@@ -151,6 +171,28 @@ public class AccountInfoPage extends TabPage implements AccountInfoPresenter.Mvp
             }
         }
 
+        @Override
+        public void showLoginBtText(String text) {
+            final AccountInfoPresenter.MvpView ui = uiRef.get();
+            if (ui != null) {
+                ui.showLoginBtText(text);
+            }
+        }
 
+        @Override
+        public void showUserHead(String path) {
+            final AccountInfoPresenter.MvpView ui = uiRef.get();
+            if (ui != null) {
+                ui.showUserHead(path);
+            }
+        }
+
+        @Override
+        public void showUserHead(int resId) {
+            final AccountInfoPresenter.MvpView ui = uiRef.get();
+            if (ui != null) {
+                ui.showUserHead(resId);
+            }
+        }
     }
 }

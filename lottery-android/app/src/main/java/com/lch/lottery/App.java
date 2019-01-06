@@ -5,7 +5,13 @@ import android.app.Application;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 
+import com.baidu.mapapi.CoordType;
+import com.baidu.mapapi.SDKInitializer;
 import com.blankj.utilcode.util.Utils;
+import com.lch.lottery.servicetool.ServiceModuleFactory;
+import com.lch.lottery.servicetool.ServiceModuleInjector;
+import com.lch.lottery.servicetool.dataimpl.MemServiceToolSource;
+import com.lch.lottery.servicetool.datainterface.ServiceToolSource;
 import com.lch.lottery.topic.TopicModuleFactory;
 import com.lch.lottery.topic.TopicModuleInjector;
 import com.lch.lottery.topic.datainterface.AdRepo;
@@ -48,7 +54,8 @@ public class App extends Application {
         Utils.init(this);
         NetKit.init(this);
         ImgLoaderManager.getINS().init(this, null);
-        //SDKInitializer.initialize(this);
+        SDKInitializer.initialize(this);
+        SDKInitializer.setCoordType(CoordType.GCJ02);
 
         TopicModuleInjector.getINS().initFactory(new TopicModuleFactory() {
             @Override
@@ -167,6 +174,14 @@ public class App extends Application {
                         return new ResponseValue<>();
                     }
                 };
+            }
+        });
+
+
+        ServiceModuleInjector.getINS().initFactory(new ServiceModuleFactory() {
+            @Override
+            public ServiceToolSource provideServiceToolSource() {
+                return new MemServiceToolSource();
             }
         });
 

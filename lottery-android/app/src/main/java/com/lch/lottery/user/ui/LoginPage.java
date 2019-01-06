@@ -54,6 +54,12 @@ public class LoginPage extends TabPage implements LoginPresenter.MvpView {
                 userPage.gotoRegister();
             }
         });
+        common_title.addLeftText("返回", new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                userPage.gotoAccountInfo();
+            }
+        });
 
 
         loginBT.setOnClickListener(new OnClickListener() {

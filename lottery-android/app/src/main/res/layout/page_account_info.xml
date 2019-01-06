@@ -19,7 +19,7 @@
             android:layout_height="100dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="10dp"
-            android:src="@mipmap/def_head"
+            android:src="@drawable/default_head"
 
             />
 
@@ -49,26 +49,11 @@
         />
 
     <com.lch.lottery.user.widget.UserCenterListItem
-        android:id="@+id/lottery_place_widget"
+        android:id="@+id/switchLotteryView"
         style="@style/UserCenterListLayout"
         app:UserCenterListItem_icon="@drawable/ic_home_black_24dp"
-        app:UserCenterListItem_text="附近彩票投注站"
-
-        />
-
-    <com.lch.lottery.user.widget.UserCenterListItem
-        android:id="@+id/special_number_widget"
-        style="@style/UserCenterListLayout"
-        app:UserCenterListItem_icon="@drawable/ic_home_black_24dp"
-        app:UserCenterListItem_text="特邀专家预测"
-
-        />
-
-    <com.lch.lottery.user.widget.UserCenterListItem
-        android:id="@+id/lottery_graphy_widget"
-        style="@style/UserCenterListLayout"
-        app:UserCenterListItem_icon="@drawable/ic_home_black_24dp"
-        app:UserCenterListItem_text="彩票趋势图"
+        app:UserCenterListItem_text="切换彩票种类"
+        android:visibility="gone"
 
         />
 
@@ -79,7 +64,6 @@
         app:UserCenterListItem_text="退出登录"
 
         />
-
 
 
 </LinearLayout>

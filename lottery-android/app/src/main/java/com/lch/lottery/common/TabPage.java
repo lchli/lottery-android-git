@@ -33,7 +33,6 @@ public class TabPage extends FrameLayout implements Application.ActivityLifecycl
 
     }
 
-
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
 

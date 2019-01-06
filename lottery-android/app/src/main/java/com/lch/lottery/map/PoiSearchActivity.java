@@ -23,6 +23,7 @@ import com.baidu.mapapi.search.core.SearchResult;
 import com.baidu.mapapi.search.poi.OnGetPoiSearchResultListener;
 import com.baidu.mapapi.search.poi.PoiDetailResult;
 import com.baidu.mapapi.search.poi.PoiDetailSearchOption;
+import com.baidu.mapapi.search.poi.PoiDetailSearchResult;
 import com.baidu.mapapi.search.poi.PoiIndoorResult;
 import com.baidu.mapapi.search.poi.PoiNearbySearchOption;
 import com.baidu.mapapi.search.poi.PoiResult;
@@ -90,6 +91,11 @@ public class PoiSearchActivity extends FragmentActivity implements
     }
 
     @Override
+    public void onGetPoiDetailResult(PoiDetailSearchResult poiDetailSearchResult) {
+
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
     }
@@ -106,8 +112,15 @@ public class PoiSearchActivity extends FragmentActivity implements
                     .show();
             return;
         }
-        PoiNearbySearchOption nearbySearchOption = new PoiNearbySearchOption().keyword("彩票").sortType(PoiSortType.distance_from_near_to_far).location(new LatLng(mBDLocation.getLatitude(), mBDLocation.getLongitude()))
+        com.apkfuns.logutils.LogUtils.e("LOC:"+mBDLocation.getLatitude());
+
+        PoiNearbySearchOption nearbySearchOption = new PoiNearbySearchOption()
+                .keyword("彩票")
+                .sortType(PoiSortType.distance_from_near_to_far)
+                .location(new LatLng(mBDLocation.getLatitude(), mBDLocation.getLongitude()))
+                .scope(1)
                 .radius(RADIUS).pageNum(loadIndex).pageCapacity(PAGE_SIZE);
+
         mPoiSearch.searchNearby(nearbySearchOption);
     }
 
