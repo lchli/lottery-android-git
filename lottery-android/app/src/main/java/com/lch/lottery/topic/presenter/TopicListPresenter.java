@@ -111,6 +111,7 @@ public class TopicListPresenter {
         view.showEmpty(false);
         view.showSortText(formatSortText());
         view.showSearchByText(formatSearchByText());
+        view.showLoading(true);
 
 
         final SearchTopicCase.Param param = new SearchTopicCase.Param();
@@ -179,6 +180,7 @@ public class TopicListPresenter {
 
 
     public void onLoadMore() {
+        view.showLoading(true);
 
         if (!haveMore) {
             view.showNoMore("已无更多数据！");

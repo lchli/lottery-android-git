@@ -12,7 +12,7 @@ import android.view.View;
 import com.blankj.utilcode.util.ToastUtils;
 import com.lch.lottery.R;
 import com.lch.lottery.common.TabPage;
-import com.lch.lottery.filter.GridDividerDecoration;
+import com.lch.lottery.common.GridDividerDecoration;
 import com.lch.lottery.servicetool.datainterface.ServiceTool;
 import com.lch.lottery.servicetool.presenter.ServicePagePresenter;
 import com.lch.lottery.util.DialogUtil;

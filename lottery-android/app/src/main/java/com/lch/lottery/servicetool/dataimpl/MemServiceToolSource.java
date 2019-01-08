@@ -1,9 +1,12 @@
 package com.lch.lottery.servicetool.dataimpl;
 
+import android.content.Context;
+
+import com.blankj.utilcode.util.ToastUtils;
 import com.lch.lottery.App;
 import com.lch.lottery.R;
-import com.lch.lottery.filter.FilterActivity;
-import com.lch.lottery.map.PoiSearchActivity;
+import com.lch.lottery.filter.ui.FilterActivity;
+import com.lch.lottery.lotterysite.PoiSearchActivity;
 import com.lch.lottery.servicetool.datainterface.ServiceTool;
 import com.lch.lottery.servicetool.datainterface.ServiceToolSource;
 import com.lchli.arch.clean.ResponseValue;
@@ -16,6 +19,11 @@ import java.util.List;
  */
 
 public class MemServiceToolSource implements ServiceToolSource {
+    private Context context;
+
+    public MemServiceToolSource(Context context) {
+        this.context = context;
+    }
 
     @Override
     public ResponseValue<List<ServiceTool>> getTools() {
@@ -68,7 +76,7 @@ public class MemServiceToolSource implements ServiceToolSource {
     private static class HistoryTool implements ServiceTool {
         @Override
         public void launch() {
-
+            ToastUtils.showShort("暂未开放！");
         }
 
         @Override
@@ -85,7 +93,7 @@ public class MemServiceToolSource implements ServiceToolSource {
     private static class ExpertTool implements ServiceTool {
         @Override
         public void launch() {
-
+            ToastUtils.showShort("暂未开放！");
         }
 
         @Override

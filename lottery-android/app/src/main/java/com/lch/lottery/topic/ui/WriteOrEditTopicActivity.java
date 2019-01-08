@@ -52,6 +52,7 @@ public class WriteOrEditTopicActivity extends BaseCompatActivity implements Writ
         super.onCreate(savedInstanceState);
         topic = (TopicResponse.Topic) getIntent().getSerializableExtra(INTENT_KEY_TOPIC);
         writeTopicPresenter = new WriteTopicPresenter(new ViewProxy(this));
+        loadingDialog = DialogUtil.createDialog(WriteOrEditTopicActivity.this);
 
         setContentView(R.layout.activity_write_or_edit_topic);
         exitWriteTV = f(R.id.exitWriteTV);
@@ -165,17 +166,12 @@ public class WriteOrEditTopicActivity extends BaseCompatActivity implements Writ
 
     @Override
     public void showLoading() {
-        if (loadingDialog == null) {
-            loadingDialog = DialogUtil.showLoadingDialog(WriteOrEditTopicActivity.this);
-        }
+        loadingDialog.show();
     }
 
     @Override
     public void dismissLoading() {
-        if (loadingDialog != null) {
-            loadingDialog.dismiss();
-            loadingDialog = null;
-        }
+        loadingDialog.dismiss();
     }
 
     @Override

@@ -9,7 +9,7 @@ import android.widget.EditText;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.lch.lottery.R;
-import com.lch.lottery.common.CommonTitleView;
+import com.lch.lottery.common.AppTitleView;
 import com.lch.lottery.common.TabPage;
 import com.lch.lottery.user.presenter.RegisterPresenter;
 import com.lch.lottery.util.DialogUtil;
@@ -28,7 +28,7 @@ public class RegisterPage extends TabPage implements RegisterPresenter.MvpView {
     private EditText userAccountET;
     private EditText userPwdET;
     private EditText userRePwdET;
-    private CommonTitleView common_title;
+    private AppTitleView common_title;
     private RegisterPresenter registerPresenter;
     private Dialog loading;
 

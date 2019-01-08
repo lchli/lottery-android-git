@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
 
-    <com.lch.lottery.common.CommonTitleView
+    <com.lch.lottery.common.AppTitleView
         android:id="@+id/common_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

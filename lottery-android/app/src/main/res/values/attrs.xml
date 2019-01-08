@@ -64,7 +64,7 @@
         <attr name="android:layout_height" />
     </declare-styleable>
 
-    <declare-styleable name="CommonTitleView">
+    <declare-styleable name="AppTitleView">
         <attr name="icon_size" format="dimension" />
         <attr name="text_color" format="color" />
         <attr name="text_size" format="dimension" />

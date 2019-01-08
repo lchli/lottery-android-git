@@ -17,9 +17,9 @@ import com.lch.lottery.eventbus.SwitchLotteryEvent;
 import com.lch.lottery.user.presenter.AccountInfoPresenter;
 import com.lch.lottery.user.widget.UserCenterListItem;
 import com.lch.lottery.util.DialogUtil;
-import com.lch.lottery.util.EventBusUtils;
 import com.lchli.imgloader.ImgLoaderManager;
 import com.lchli.imgloader.ImgSource;
+import com.lchli.utils.tool.EventBusUtils;
 import com.lchli.utils.tool.VF;
 
 import java.lang.ref.WeakReference;

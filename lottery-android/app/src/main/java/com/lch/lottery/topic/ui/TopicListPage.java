@@ -15,13 +15,15 @@ import android.widget.TextView;
 
 import com.blankj.utilcode.util.ToastUtils;
 import com.lch.lottery.R;
+import com.lch.lottery.common.AppEmptyView;
+import com.lch.lottery.common.AppLoadingView;
 import com.lch.lottery.common.BottomSheetDialog;
 import com.lch.lottery.common.TabPage;
 import com.lch.lottery.eventbus.TopicListDataChangedEvent;
 import com.lch.lottery.topic.datainterface.TopicRepo;
 import com.lch.lottery.topic.domain.SearchTopicCase;
 import com.lch.lottery.topic.presenter.TopicListPresenter;
-import com.lch.lottery.util.EventBusUtils;
+import com.lchli.utils.tool.EventBusUtils;
 import com.lchli.utils.tool.VF;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
@@ -48,11 +50,12 @@ public class TopicListPage extends TabPage implements TopicListPresenter.MvpView
     private SmartRefreshLayout refreshLayout;
     private TopicListAdapter mTopicListAdapter;
     private View createTopicFab;
-    private View emptyView;
+    private AppEmptyView emptyView;
     private EditText etSearchKey;
     private TextView tvSearchBy;
     private TextView tvStartSearch;
     private TextView tvSorter;
+    private AppLoadingView loadingLayout;
 
     private TopicListPresenter topicListVm;
 
@@ -86,6 +89,7 @@ public class TopicListPage extends TabPage implements TopicListPresenter.MvpView
         tvSearchBy = VF.f(this, R.id.tvSearchBy);
         tvStartSearch = VF.f(this, R.id.tvStartSearch);
         tvSorter = VF.f(this, R.id.tvSorter);
+        loadingLayout = VF.f(this, R.id.loadingLayout);
 
         tvSearchBy.setOnClickListener(new OnClickListener() {
             @Override
@@ -152,7 +156,10 @@ public class TopicListPage extends TabPage implements TopicListPresenter.MvpView
     public void showLoading(boolean show) {
         if (show) {
             //do nothing.
+            loadingLayout.show();
         } else {
+            loadingLayout.hide();
+
             refreshLayout.finishRefresh();
             refreshLayout.finishLoadMore();
         }
@@ -160,7 +167,11 @@ public class TopicListPage extends TabPage implements TopicListPresenter.MvpView
 
     @Override
     public void showEmpty(boolean show) {
-        emptyView.setVisibility(show ? View.VISIBLE : View.GONE);
+        if (show) {
+            emptyView.show();
+        } else {
+            emptyView.hide();
+        }
     }
 
     @Override

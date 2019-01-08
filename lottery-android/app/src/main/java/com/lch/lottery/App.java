@@ -181,7 +181,7 @@ public class App extends Application {
         ServiceModuleInjector.getINS().initFactory(new ServiceModuleFactory() {
             @Override
             public ServiceToolSource provideServiceToolSource() {
-                return new MemServiceToolSource();
+                return new MemServiceToolSource(app);
             }
         });
 
